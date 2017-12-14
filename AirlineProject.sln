@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseExchange", "DatabaseExchange\DatabaseExchange.csproj", "{CF0C31B1-E2C5-4877-B60E-C77F84D88E10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.Data", "Airline.Data\Airline.Data.csproj", "{4EB552BE-3653-4155-B20E-767C7D49E94B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF0C31B1-E2C5-4877-B60E-C77F84D88E10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF0C31B1-E2C5-4877-B60E-C77F84D88E10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF0C31B1-E2C5-4877-B60E-C77F84D88E10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF0C31B1-E2C5-4877-B60E-C77F84D88E10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EB552BE-3653-4155-B20E-767C7D49E94B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EB552BE-3653-4155-B20E-767C7D49E94B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EB552BE-3653-4155-B20E-767C7D49E94B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EB552BE-3653-4155-B20E-767C7D49E94B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C1B5997D-9D2F-4100-BD44-A41DF8C34676}
+	EndGlobalSection
+EndGlobal
