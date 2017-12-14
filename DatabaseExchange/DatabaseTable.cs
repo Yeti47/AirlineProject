@@ -25,6 +25,8 @@ namespace DatabaseExchange {
 
         public IEnumerable<string> AttributeAliases => _attributes.Values;
 
+        public int AttributeCount => _attributes.Count;
+
         /// <summary>
         /// Eine Aufzählung aller effektiven, für ein SELECT-Statement verwendeten 
         /// Attribut-Bezeichner. Dabei handelt es sich entweder um den tatsächlichen Namen
@@ -51,17 +53,20 @@ namespace DatabaseExchange {
 
                 foreach (KeyValuePair<string, string> kvp in _attributes) {
 
-                    sql += kvp.Key;
+                    sql += $" [{kvp.Key}] ";
 
                     if (kvp.Value != null)
-                        sql += $" AS {kvp.Value} ";
+                        sql += $" AS [{kvp.Value}] ";
+
+                    sql += ",";
 
                 }
+
+                sql = sql.TrimEnd(',');
 
                 sql += $"FROM {Name}";
 
                 return sql;
-
 
             }
 
@@ -97,7 +102,7 @@ namespace DatabaseExchange {
             if (_attributes.ContainsKey(name))
                 return false;
 
-            if (_attributes.Values.Any(v => v == alias))
+            if (alias != null && _attributes.Values.Any(v => v == alias))
                 return false;
 
             _attributes.Add(name, alias);

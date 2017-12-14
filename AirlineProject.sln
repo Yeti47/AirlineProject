@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseExchange", "Databas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.Data", "Airline.Data\Airline.Data.csproj", "{4EB552BE-3653-4155-B20E-767C7D49E94B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.CheckIn", "Airline.CheckIn\Airline.CheckIn.csproj", "{518D1560-1BF6-4B87-9B8E-7F2641C917A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4EB552BE-3653-4155-B20E-767C7D49E94B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EB552BE-3653-4155-B20E-767C7D49E94B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EB552BE-3653-4155-B20E-767C7D49E94B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{518D1560-1BF6-4B87-9B8E-7F2641C917A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{518D1560-1BF6-4B87-9B8E-7F2641C917A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{518D1560-1BF6-4B87-9B8E-7F2641C917A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{518D1560-1BF6-4B87-9B8E-7F2641C917A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

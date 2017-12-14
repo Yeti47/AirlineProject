@@ -64,7 +64,7 @@ namespace DatabaseExchange {
         /// <param name="errorDetails">Ein Ausgabe-Parameter, welcher im Fehlerfall eine Beschreibung des Fehlers enthält, sofern 
         /// <see cref="StrictErrorHandling"/> nicht aktiviert wurde.</param>
         /// <returns>Eine Aufzählung von Objekten, welche mit den ausgelesenen Werten initialisiert wurden.</returns>
-        public IEnumerable<T> Fetch(DatabaseObjectInitializer<T> initializer, string whereClause = null, out string errorDetails) {
+        public IEnumerable<T> Fetch(DatabaseObjectInitializer<T> initializer, out string errorDetails, string whereClause = null) {
 
             if (initializer == null)
                 throw new ArgumentNullException(nameof(initializer), "The initialization handler must not be null.");
@@ -77,7 +77,7 @@ namespace DatabaseExchange {
 
             using(SqlConnection connection = new SqlConnection(ConnectionString)) {
 
-                SqlCommand command = new SqlCommand(SourceTable.SelectClause);
+                SqlCommand command = new SqlCommand(SourceTable.SelectClause, connection);
 
                 try {
 
@@ -125,7 +125,7 @@ namespace DatabaseExchange {
         /// <returns>Eine Aufzählung von Objekten, welche mit den ausgelesenen Werten initialisiert wurden.</returns>
         public IEnumerable<T> Fetch(DatabaseObjectInitializer<T> initializer, string whereClause = null) {
 
-            return Fetch(initializer, whereClause, out string temp);
+            return Fetch(initializer, out string temp, whereClause);
 
         }
 
