@@ -17,6 +17,10 @@ namespace DatabaseExchange {
     /// <returns>Das erzeugte und initialisierte Objekt.</returns>
     public delegate T DatabaseObjectInitializer<out T>(IReadOnlyDictionary<string, object> attributes);
 
+    /// <summary>
+    /// Stellt generische Methoden zum Lesen und Schreiben von Datensätzen zur Verfügung.
+    /// </summary>
+    /// <typeparam name="T">Der Typ der Klasse, welche die zu lesenden bzw. zu schreibenden Datensätze repräsentiert.</typeparam>
     public class ObjectRelationalMapper<T> {
 
         #region Fields
@@ -27,8 +31,14 @@ namespace DatabaseExchange {
 
         public string ConnectionString { get; set; }
 
+        /// <summary>
+        /// Die Quell-Tabelle, aus welcher die Datensätze gelesen werden sollen.
+        /// </summary>
         public DatabaseTable SourceTable { get; set; }
 
+        /// <summary>
+        /// Die Ziel-Tabelle, in welche Datensätze geschrieben werden sollen.
+        /// </summary>
         public DatabaseTable TargetTable { get; set; }
         
         /// <summary>
@@ -60,29 +70,39 @@ namespace DatabaseExchange {
         /// über den Typ-Parameter bestimmten Typs erzeugt und als Aufzählung zurückgegeben.
         /// </summary>
         /// <param name="initializer">Eine Methode zur Erzeugung und Initialisierung der Objekte.</param>
-        /// <param name="whereClause">Eine optionale Where-Klausel. Wird null übergeben, so wird keine Where-Klausel verwendet.</param>
-        /// <param name="errorDetails">Ein Ausgabe-Parameter, welcher im Fehlerfall eine Beschreibung des Fehlers enthält, sofern 
-        /// <see cref="StrictErrorHandling"/> nicht aktiviert wurde.</param>
-        /// <returns>Eine Aufzählung von Objekten, welche mit den ausgelesenen Werten initialisiert wurden.</returns>
-        public IEnumerable<T> Fetch(DatabaseObjectInitializer<T> initializer, out string errorDetails, string whereClause = null) {
+        /// <param name="whereClause">Eine optionale Where-Klausel. Wird null übergeben, so wird keine Where-Klausel verwendet. Kann auch
+        /// Platzhalter in Form von @name enthalten.</param>
+        /// <returns>Eine Instanz von <see cref="FetchResult{T}"/>, welche eine Aufzählung der eingeholten Objekte und/oder
+        /// eine Beschreibung des aufgetretenen Fehlers enthält.</returns>
+        public FetchResult<T> Fetch(DatabaseObjectInitializer<T> initializer, string whereClause = null, SqlParameter[] sqlParams = null) {
+
+            if (SourceTable == null)
+                throw new InvalidOperationException("Cannot perform fetch operation, since the SourceTable has not been defined.");
+
+            if (SourceTable.AttributeCount <= 0)
+                throw new InvalidOperationException("Cannot perform fetch operation due to the SourceTable not containing any attributes.");
 
             if (initializer == null)
                 throw new ArgumentNullException(nameof(initializer), "The initialization handler must not be null.");
 
-            errorDetails = string.Empty;
+            string errorDetails = null;
 
             string where = String.IsNullOrWhiteSpace(whereClause) ? "" : $" WHERE {whereClause} ";
+            string sql = SourceTable.SelectClause + where;
 
             List<T> dbObjects = new List<T>();
 
             using(SqlConnection connection = new SqlConnection(ConnectionString)) {
 
-                SqlCommand command = new SqlCommand(SourceTable.SelectClause, connection);
+                SqlCommand command = new SqlCommand(sql, connection);
+                
+                if (sqlParams != null)
+                    command.Parameters.AddRange(sqlParams);
 
                 try {
 
                     connection.Open();
-
+                    
                     SqlDataReader reader = command.ExecuteReader();
 
                     while (reader.Read()) {
@@ -105,27 +125,161 @@ namespace DatabaseExchange {
                         throw e;
 
                     errorDetails = e.Message;
-                    return null;
 
                 }
 
             }
 
-            return dbObjects;
+            return new FetchResult<T>(dbObjects, sql, errorDetails);
 
         }
 
-        /// <summary>
-        /// Ruft alle Datensätze aus der zuvor angegebenen <see cref="SourceTable"/> ab. Wird eine Where-Klausel übergeben,
-        /// so werden nur übereinstimmende Datensätze abgerufen. Aus den ausgelesenen Datensätzen werden Objekte des
-        /// über den Typ-Parameter bestimmten Typs erzeugt und als Aufzählung zurückgegeben.
-        /// </summary>
-        /// <param name="initializer">Eine Methode zur Erzeugung und Initialisierung der Objekte.</param>
-        /// <param name="whereClause">Eine optionale Where-Klausel. Wird null übergeben, so wird keine Where-Klausel verwendet.</param>
-        /// <returns>Eine Aufzählung von Objekten, welche mit den ausgelesenen Werten initialisiert wurden.</returns>
-        public IEnumerable<T> Fetch(DatabaseObjectInitializer<T> initializer, string whereClause = null) {
+        public ActionQueryResult Insert(SqlParameter[] sqlParams) {
 
-            return Fetch(initializer, out string temp, whereClause);
+            if(TargetTable == null)
+                throw new InvalidOperationException("Cannot perform insert operation, since the TargetTable has not been defined.");
+
+
+            int numAffectedRows = 0;
+            string errorDetails = null;
+
+            string sql = $"INSERT INTO {TargetTable.Name} (";
+
+            IEnumerable<string> attrNames = sqlParams.Select(p => p.ParameterName.TrimStart('@')).Intersect(TargetTable.AttributeIdentifiers, StringComparer.OrdinalIgnoreCase);
+
+            string attrSql = string.Join(", ", attrNames);
+
+            sql += attrSql + ") VALUES (@" + string.Join(", @", attrNames) + ")";
+
+            using (SqlConnection connection = new SqlConnection(ConnectionString)) {
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                if (sqlParams != null)
+                    command.Parameters.AddRange(sqlParams);
+
+                try {
+
+                    connection.Open();
+
+                    numAffectedRows = command.ExecuteNonQuery();
+
+                }
+                catch (Exception e) {
+
+                    if (StrictErrorHandling)
+                        throw e;
+
+                    errorDetails = e.Message;
+
+                }
+
+            }
+
+            return new ActionQueryResult(sql, numAffectedRows, errorDetails);
+
+        }
+
+        public ActionQueryResult Update(SqlParameter[] sqlParams, string whereClause, SqlParameter[] whereParams = null) {
+
+            if (TargetTable == null)
+                throw new InvalidOperationException("Cannot perform update operation, since the TargetTable has not been defined.");
+
+            int numAffectedRows = 0;
+            string errorDetails = null;
+
+            string sql = $"UPDATE {TargetTable.Name} SET";
+
+            IEnumerable<string> attrNames = sqlParams.Select(p => p.ParameterName.TrimStart('@')).Intersect(TargetTable.AttributeIdentifiers, StringComparer.OrdinalIgnoreCase);
+
+            foreach(string attrName in attrNames) {
+
+                sql += $" {attrName}=@{attrName},";
+
+            }
+
+            sql = sql.TrimEnd(',');
+
+            if(whereClause != null) {
+
+                sql += " WHERE " + whereClause;
+
+            }
+
+            using (SqlConnection connection = new SqlConnection(ConnectionString)) {
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                if (sqlParams != null)
+                    command.Parameters.AddRange(sqlParams);
+
+                if (whereParams != null)
+                    command.Parameters.AddRange(whereParams);
+
+                try {
+
+                    connection.Open();
+
+                    numAffectedRows = command.ExecuteNonQuery();
+
+                }
+                catch (Exception e) {
+
+                    if (StrictErrorHandling)
+                        throw e;
+
+                    errorDetails = e.Message;
+
+                }
+
+            }
+
+            return new ActionQueryResult(sql, numAffectedRows, errorDetails);
+
+        }
+
+        public ActionQueryResult Delete(string whereClause, SqlParameter[] sqlParams = null) {
+
+            if (TargetTable == null)
+                throw new InvalidOperationException("Cannot perform delete operation, since the TargetTable has not been defined.");
+
+            int numAffectedRows = 0;
+            string errorDetails = null;
+
+            string sql = $"DELETE FROM {TargetTable.Name}";
+
+            if(whereClause != null) {
+
+                sql += " WHERE " + whereClause;
+
+            }
+
+            using (SqlConnection connection = new SqlConnection(ConnectionString)) {
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                if (sqlParams != null)
+                    command.Parameters.AddRange(sqlParams);
+
+                try {
+
+                    connection.Open();
+
+                    numAffectedRows = command.ExecuteNonQuery();
+
+                }
+                catch (Exception e) {
+
+                    if (StrictErrorHandling)
+                        throw e;
+
+                    errorDetails = e.Message;
+
+                }
+
+            }
+
+            return new ActionQueryResult(sql, numAffectedRows, errorDetails);
 
         }
 

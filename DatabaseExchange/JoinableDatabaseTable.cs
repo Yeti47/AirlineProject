@@ -13,11 +13,13 @@ namespace DatabaseExchange {
 
         public List<Join> Joins { get; private set; }
 
-        public override string SelectClause {
+        public override string SelectClause => base.SelectClause + JoinClause;
+
+        public string JoinClause {
 
             get {
 
-                string sql = base.SelectClause;
+                string sql = "";
 
                 foreach (Join join in Joins)
                     sql += " " + join.ToString();
@@ -27,6 +29,8 @@ namespace DatabaseExchange {
             }
 
         }
+
+        public override string FullPath => Name + JoinClause;
 
         public JoinableDatabaseTable(string name, IEnumerable<Join> joins = null) : base(name) {
 

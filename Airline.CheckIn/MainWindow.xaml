@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Airline.CheckIn"
+        xmlns:AirlineData="clr-namespace:Airline.Data;assembly=Airline.Data"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525"
+        Title="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="350" Width="525"
         Loaded="OnWindowLoaded">
     <Grid>
         

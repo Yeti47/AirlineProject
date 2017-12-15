@@ -72,6 +72,8 @@ namespace DatabaseExchange {
 
         }
 
+        public virtual string FullPath => Name;
+
         public int AttributesCount => _attributes.Count;
 
         #endregion

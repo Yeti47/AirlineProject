@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Airline.Data;
 using DatabaseExchange;
+using System.Data.SqlClient;
 
 namespace Airline.CheckIn {
 
@@ -42,19 +43,63 @@ namespace Airline.CheckIn {
             dbTable.AddAttribute("Country");
             dbTable.AddAttribute("City");
 
-            ObjectRelationalMapper<Airport> mapper = new ObjectRelationalMapper<Airport>(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename='C:\Users\alexa\Documents\Visual Studio 2017\Projects\AirlineProject\Airline.Data\Databases\airline_db.mdf';Integrated Security=True", dbTable);
+            ObjectRelationalMapper<Airport> mapper = new ObjectRelationalMapper<Airport>(Config.DB_CONNECTION_STRING, dbTable, dbTable);
 
-            IEnumerable<Airport> airports = mapper.Fetch(attr => new Airport(attr["Country"].ToString(), attr["City"].ToString()), out string errorDetails);
 
-            if (airports == null)
-                MessageBox.Show(errorDetails, "Fehler");
+            ActionQueryResult actionQueryResult = mapper.Delete("City=@City", new SqlParameter[] {
+                new SqlParameter("@City", "Kabul")
+            });
+
+            if (actionQueryResult.HasError) {
+
+                MessageBox.Show(actionQueryResult.ToString(), "Fehler!");
+
+            }
+            else
+                MessageBox.Show("Delete success! " + actionQueryResult.ToString());
+
+
+            FetchResult<Airport> airportFetchResult = mapper.Fetch(attr => new Airport(attr["Country"].ToString(), attr["City"].ToString()));
+            
+            if (airportFetchResult.HasError)
+                MessageBox.Show(airportFetchResult.ErrorDetails, "Fehler");
             else {
 
-                string msg = airports.Select(a => a.ToString()).Aggregate((left, right) => left + "\n" + right);
+                string msg = airportFetchResult.RetrievedItems.Select(a => a.ToString()).Aggregate((left, right) => left + "\n" + right);
 
                 MessageBox.Show("Airports:\n" + msg, "Success!");
                 
             }
+
+            //ActionQueryResult actionQueryResult = mapper.Update(new SqlParameter[] {
+            //    new SqlParameter("@City", "Kabul")
+            //}, "City='Test'");
+
+            //if (actionQueryResult.HasError) {
+
+            //    MessageBox.Show(actionQueryResult.ToString(), "Fehler!");
+
+            //}
+            //else
+            //    MessageBox.Show("Update success! " + actionQueryResult.ToString());
+
+
+            //ActionQueryResult actionQueryResult = mapper.Insert(new SqlParameter[] {
+            //    new SqlParameter("@Country", "Schweiz"), new SqlParameter("@City", "Bern")
+            //});
+
+            //if(actionQueryResult.HasError) {
+
+            //    MessageBox.Show(actionQueryResult.ToString(), "Fehler!");
+
+            //}
+            //else {
+
+            //    MessageBox.Show("Insert successfull!");
+
+            //}
+
+
 
 
         }
