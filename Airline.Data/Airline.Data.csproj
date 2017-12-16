@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Airport.cs" />
+    <Compile Include="Booking.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Databases\airline_dbDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -63,6 +64,7 @@
       <DependentUpon>airline_dbDataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="Baggage.cs" />
+    <Compile Include="Flight.cs" />
     <Compile Include="Passenger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -100,7 +102,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseExchange\DatabaseExchange.csproj">
+      <Project>{cf0c31b1-e2c5-4877-b60e-c77f84d88e10}</Project>
+      <Name>DatabaseExchange</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
       <Visible>False</Visible>

@@ -53,18 +53,13 @@ namespace DatabaseExchange {
 
                 foreach (KeyValuePair<string, string> kvp in _attributes) {
 
-                    sql += $" [{kvp.Key}] ";
-
-                    if (kvp.Value != null)
-                        sql += $" AS [{kvp.Value}] ";
-
-                    sql += ",";
+                    sql += $" {kvp.Key} AS [{kvp.Value ?? kvp.Key}],";
 
                 }
 
                 sql = sql.TrimEnd(',');
 
-                sql += $"FROM {Name}";
+                sql += $" FROM {Name}";
 
                 return sql;
 
@@ -94,9 +89,6 @@ namespace DatabaseExchange {
 
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("The attribute name must not be empty or null.");
-
-            if (name == alias)
-                throw new ArgumentException("The attribute's name and its alias must not be the same.");
 
             if(alias != null && alias.Trim().Length <= 0)
                 throw new ArgumentException("The alias must not be empty. To use no alias, pass null.");

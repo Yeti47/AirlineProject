@@ -119,6 +119,16 @@ namespace DatabaseExchange {
                     }
 
                 }
+                catch(IndexOutOfRangeException e) {
+
+                    string errMsg = "Attempt to read a non-existent table attribute: " + e.Message;
+
+                    if (StrictErrorHandling)
+                        throw new Exception(errMsg);
+
+                    errorDetails = errMsg;
+
+                }
                 catch (Exception e) {
 
                     if (StrictErrorHandling)

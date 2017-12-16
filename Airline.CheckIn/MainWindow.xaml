@@ -6,9 +6,48 @@
         xmlns:local="clr-namespace:Airline.CheckIn"
         xmlns:AirlineData="clr-namespace:Airline.Data;assembly=Airline.Data"
         mc:Ignorable="d"
-        Title="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="350" Width="525"
+        Title="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="768" Width="1024"
         Loaded="OnWindowLoaded">
     <Grid>
-        
+
+        <TabControl>
+            <TabItem Header="Check-In">
+                <Grid>
+                    <GroupBox x:Name="grpBookings" Header="Buchungen" Height="272" Margin="0,0,0,437">
+                        <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <ListView x:Name="lvwBookings" HorizontalAlignment="Left" Height="200" VerticalAlignment="Top" Width="978" Margin="10,10,0,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn x:Name="id" Header="ID" Width="50" DisplayMemberBinding="{Binding Path=Id}"/>
+                                        <GridViewColumn x:Name="passenger" Header="Passagier" Width="150" DisplayMemberBinding="{Binding Path=Passenger}"/>
+                                        <GridViewColumn x:Name="flightId" Header="Flugnr." Width="70" DisplayMemberBinding="{Binding Path=Flight.Id}"/>
+                                        <GridViewColumn x:Name="departureAirport" Header="Von" Width="150" DisplayMemberBinding="{Binding Path=Flight.DepartureAirport}"/>
+                                        <GridViewColumn x:Name="destinationAirport" Header="Nach" Width="150" DisplayMemberBinding="{Binding Path=Flight.DestinationAirport}"/>
+                                        <GridViewColumn x:Name="departureTime" Header="Abflug-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfDeparture, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                                        <GridViewColumn x:Name="arrivalTime" Header="Ankunfts-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfArrival, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                                        <GridViewColumn x:Name="isWaiting" Header="Status" Width="90" DisplayMemberBinding="{Binding Path=StatusText}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <Button x:Name="btnCreateBooking" Content="Buchung erstellen" Margin="10,215,853,10" Click="OnClickButtonCreateBooking"/>
+
+
+                        </Grid>
+                    </GroupBox>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="PIL erstellen">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Gepäck scannen">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            
+
+        </TabControl>
+
+
+
     </Grid>
 </Window>

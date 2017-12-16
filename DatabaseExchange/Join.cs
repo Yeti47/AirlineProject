@@ -42,6 +42,8 @@ namespace DatabaseExchange {
 
         }
 
+        public string TargetTableAlias { get; set; }
+
         public string SourceColumn {
 
             get => _sourceColumn;
@@ -78,11 +80,13 @@ namespace DatabaseExchange {
 
         #region Constructors
 
-        public Join(string targetTable, string sourceColumn, string targetColumn, JoinTypes type = JoinTypes.Inner, bool isEqui = true) {
+        public Join(string targetTable, string sourceColumn, string targetColumn, string targetTableAlias = null, JoinTypes type = JoinTypes.Inner, bool isEqui = true) {
 
             _targetTable = targetTable;
             _sourceColumn = sourceColumn;
             _targetColumn = targetColumn;
+
+            TargetTableAlias = targetTableAlias;
 
             JoinType = type;
             IsEqui = isEqui;
@@ -95,8 +99,8 @@ namespace DatabaseExchange {
 
         public override string ToString() {
 
-            return $"{JoinType.ToString().ToUpper()} JOIN {_targetTable} ON " +
-                $"{_sourceColumn} {ComparisonOperator} {_targetColumn}";
+            return $"{JoinType.ToString().ToUpper()} JOIN {_targetTable} {TargetTableAlias ?? ""} ON " +
+                $"{_sourceColumn} {ComparisonOperator} {TargetTableAlias ?? _targetTable}.{_targetColumn}";
 
         }
 

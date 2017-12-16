@@ -44,7 +44,9 @@ namespace Airline.Data {
 
         #region Methods
 
-        public string GetFullName(bool includeTitle = true) => (includeTitle ? TitleString : "") + $"{FirstName} {LastName}";
+        public string GetFullName(bool includeTitle = true) => (includeTitle ? TitleString + " " : "") + $"{FirstName} {LastName}";
+
+        public override string ToString() => GetFullName();
 
         #endregion
 

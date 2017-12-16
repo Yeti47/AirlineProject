@@ -38,7 +38,7 @@ namespace DatabaseExchange {
 
         }
 
-        public Join CreateJoin(string targetTable, string sourceColumn, string targetColumn, JoinTypes type = JoinTypes.Inner, bool isEqui = true) {
+        public Join CreateJoin(string targetTable, string sourceColumn, string targetColumn, string targetTableAlias = null, JoinTypes type = JoinTypes.Inner, bool isEqui = true) {
 
             if (targetTable == null)
                 throw new ArgumentNullException(nameof(targetTable));
@@ -49,7 +49,7 @@ namespace DatabaseExchange {
             if (targetColumn == null)
                 throw new ArgumentNullException(nameof(targetColumn));
 
-            Join join = new Join(targetTable, sourceColumn, targetColumn, type, true);
+            Join join = new Join(targetTable, sourceColumn, targetColumn, targetTableAlias, type, true);
             Joins.Add(join);
 
             return join;

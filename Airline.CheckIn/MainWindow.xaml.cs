@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Airline.Data;
 using DatabaseExchange;
 using System.Data.SqlClient;
+using System.Collections.ObjectModel;
 
 namespace Airline.CheckIn {
 
@@ -23,11 +24,26 @@ namespace Airline.CheckIn {
     /// </summary>
     public partial class MainWindow : Window {
 
+        #region Fields
+
+        private ObservableCollection<Booking> _bookings = new ObservableCollection<Booking>();
+
+        private ObjectRelationalMapper<Booking> _bookingMapper = new ObjectRelationalMapper<Booking>(Config.DB_CONNECTION_STRING, Config.BookingSourceTable);
+
+        #endregion
+
+        #region Properties
+
+        #endregion
+
         #region Constructors
 
         public MainWindow() {
 
             InitializeComponent();
+
+            lvwBookings.Items.Clear();
+            lvwBookings.ItemsSource = _bookings;
 
         }
 
@@ -38,73 +54,46 @@ namespace Airline.CheckIn {
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e) {
 
-            DatabaseTable dbTable = new DatabaseTable("airports");
-            dbTable.AddAttribute("Id");
-            dbTable.AddAttribute("Country");
-            dbTable.AddAttribute("City");
+            PopulateBookingListView();
 
-            ObjectRelationalMapper<Airport> mapper = new ObjectRelationalMapper<Airport>(Config.DB_CONNECTION_STRING, dbTable, dbTable);
+        }
 
+        private void PopulateBookingListView() {
 
-            ActionQueryResult actionQueryResult = mapper.Delete("City=@City", new SqlParameter[] {
-                new SqlParameter("@City", "Kabul")
-            });
+            FetchResult<Booking> fetchResult = _bookingMapper.Fetch(Booking.CreateFromDataRecord);
 
-            if (actionQueryResult.HasError) {
-
-                MessageBox.Show(actionQueryResult.ToString(), "Fehler!");
-
-            }
-            else
-                MessageBox.Show("Delete success! " + actionQueryResult.ToString());
-
-
-            FetchResult<Airport> airportFetchResult = mapper.Fetch(attr => new Airport(attr["Country"].ToString(), attr["City"].ToString()));
-            
-            if (airportFetchResult.HasError)
-                MessageBox.Show(airportFetchResult.ErrorDetails, "Fehler");
+            if (fetchResult.HasError)
+                MessageBox.Show("Fehler beim Einholen der Buchungen. \r\n\r\nDetails:\r\n" + fetchResult.ErrorDetails, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             else {
 
-                string msg = airportFetchResult.RetrievedItems.Select(a => a.ToString()).Aggregate((left, right) => left + "\n" + right);
-
-                MessageBox.Show("Airports:\n" + msg, "Success!");
+                _bookings.Clear();
                 
+                foreach (Booking booking in fetchResult.RetrievedItems)
+                    _bookings.Add(booking);
+
             }
+        }
 
-            //ActionQueryResult actionQueryResult = mapper.Update(new SqlParameter[] {
-            //    new SqlParameter("@City", "Kabul")
-            //}, "City='Test'");
+        private void OnClickButtonCreateBooking(object sender, RoutedEventArgs e) {
 
-            //if (actionQueryResult.HasError) {
+            BookingWindow bookingWindow = new BookingWindow();
 
-            //    MessageBox.Show(actionQueryResult.ToString(), "Fehler!");
+            bool? dialogResult = bookingWindow.ShowDialog();
 
-            //}
-            //else
-            //    MessageBox.Show("Update success! " + actionQueryResult.ToString());
+            if (!dialogResult.HasValue)
+                return;
 
+            if(dialogResult.Value) {
 
-            //ActionQueryResult actionQueryResult = mapper.Insert(new SqlParameter[] {
-            //    new SqlParameter("@Country", "Schweiz"), new SqlParameter("@City", "Bern")
-            //});
+                // Booking created successfully
 
-            //if(actionQueryResult.HasError) {
-
-            //    MessageBox.Show(actionQueryResult.ToString(), "Fehler!");
-
-            //}
-            //else {
-
-            //    MessageBox.Show("Insert successfull!");
-
-            //}
-
-
+            }
 
 
         }
 
         #endregion
+
 
     }
 
