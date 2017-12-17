@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Airline.Data {
 
-    public class Flight { 
+    public class Flight {
+
+        #region Fields
+
+        private List<SeatNumber> _allSeatNumbers;
+
+        #endregion
 
         #region Properties
 
@@ -30,18 +36,28 @@ namespace Airline.Data {
                 if (DepartureAirport == null || DestinationAirport == null)
                     return false;
 
-                return DepartureAirport.Country == DestinationAirport.Country;
+                return DepartureAirport.Country != DestinationAirport.Country;
 
             }
 
         }
+
+        public string FlightTypeText => IsInternational ? "International" : "National";
+
+        public IEnumerable<SeatNumber> TakenSeatNumbers { get; set; }
+
+        public IEnumerable<SeatNumber> AllSeatNumbers => _allSeatNumbers;
+
+        public IEnumerable<SeatNumber> AvailableSeatNumbers => _allSeatNumbers.Except(TakenSeatNumbers);
+
+        public int AvailableSeatCount => _allSeatNumbers.Count - TakenSeatNumbers.Count();
 
         #endregion
 
         #region Constructors
 
         public Flight(int id, DateTime timeOfDeparture, DateTime timeOfArrival,
-            Airport departureAirport, Airport destinationAirport, int seatsRowCount, int seatsPerRow) {
+            Airport departureAirport, Airport destinationAirport, int seatsRowCount, int seatsPerRow, IEnumerable<SeatNumber> takenSeats = null) {
 
             Id = id;
             TimeOfDeparture = timeOfDeparture;
@@ -50,6 +66,20 @@ namespace Airline.Data {
             DestinationAirport = destinationAirport;
             SeatRowsCount = seatsRowCount;
             SeatsPerRow = seatsPerRow;
+
+            _allSeatNumbers = new List<SeatNumber>();
+
+            for(int y = 1; y <= SeatRowsCount; y++) {
+
+                for(int x = 1; x <= SeatsPerRow; x++) {
+
+                    _allSeatNumbers.Add(new SeatNumber(x, y));
+
+                }
+
+            }
+
+            TakenSeatNumbers = takenSeats ?? new SeatNumber[0];
 
         }
 

@@ -13,9 +13,9 @@
         <TabControl>
             <TabItem Header="Check-In">
                 <Grid>
-                    <GroupBox x:Name="grpBookings" Header="Buchungen" Height="272" Margin="0,0,0,437">
-                        <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
-                            <ListView x:Name="lvwBookings" HorizontalAlignment="Left" Height="200" VerticalAlignment="Top" Width="978" Margin="10,10,0,0">
+                    <GroupBox x:Name="grpBookings" Header="Buchungen" Height="400" VerticalAlignment="Top">
+                        <Grid>
+                            <ListView x:Name="lvwBookings" HorizontalAlignment="Left" Height="320" VerticalAlignment="Top" Width="978" Margin="10,10,0,0">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn x:Name="id" Header="ID" Width="50" DisplayMemberBinding="{Binding Path=Id}"/>
@@ -29,8 +29,8 @@
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                            <Button x:Name="btnCreateBooking" Content="Buchung erstellen" Margin="10,215,853,10" Click="OnClickButtonCreateBooking"/>
 
+                            <Button x:Name="btnCreateBooking" Content="Festbuchung erstellen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateBooking" Margin="10,348,0,0"/>
 
                         </Grid>
                     </GroupBox>

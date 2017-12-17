@@ -60,7 +60,7 @@ namespace Airline.Data {
 
             int passengerId = (int)attributes["bookings.PassengerId"];
 
-            if (Enum.TryParse<Title>(attributes["passengers.Title"].ToString(), true, out Title title))
+            if (!Enum.TryParse<Title>(attributes["passengers.Title"].ToString(), true, out Title title))
                 title = Title.Mr;
 
             string firstName = attributes["passengers.FirstName"].ToString();

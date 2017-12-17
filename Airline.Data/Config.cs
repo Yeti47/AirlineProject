@@ -27,6 +27,8 @@ namespace Airline.Data {
         public static readonly JoinableDatabaseTable BookingSourceTable;
         public static readonly JoinableDatabaseTable FlightSourceTable;
 
+        public static readonly DatabaseTable SeatsTable;
+
         #endregion
 
         #region Static Constructor
@@ -35,6 +37,7 @@ namespace Airline.Data {
 
             FlightSourceTable = InitializeFlightSourceTable();
             BookingSourceTable = InitializeBookingSourceTable();
+            SeatsTable = InitializeSeatsTable();
 
         }
 
@@ -77,17 +80,30 @@ namespace Airline.Data {
             bookingSourceTable.AddAttribute("flights.TimeOfArrival");
             bookingSourceTable.AddAttribute("flights.SeatRows");
             bookingSourceTable.AddAttribute("flights.SeatsPerRow");
-            bookingSourceTable.AddAttribute("seats.PosX");
-            bookingSourceTable.AddAttribute("seats.PosY");
+            //bookingSourceTable.AddAttribute("seats.PosX");
+            //bookingSourceTable.AddAttribute("seats.PosY");
             bookingSourceTable.AddAttribute("bookings.IsWaiting");
 
+            //bookingSourceTable.CreateJoin("seats", "bookings.FlightId", "FlightId", null, JoinTypes.Left);
             bookingSourceTable.CreateJoin("passengers", "bookings.PassengerId", "Id");
             bookingSourceTable.CreateJoin("flights", "bookings.FlightId", "Id");
             bookingSourceTable.CreateJoin("airports", "flights.DepartureAirportId", "Id", "depAirport");
             bookingSourceTable.CreateJoin("airports", "flights.DestinationAirportId", "Id", "destAirport");
-            bookingSourceTable.CreateJoin("seats", "bookings.FlightId", "FlightId", null, JoinTypes.Left);
 
             return bookingSourceTable;
+
+        }
+
+        private static DatabaseTable InitializeSeatsTable() {
+
+            DatabaseTable seatsTable = new DatabaseTable("seats");
+            seatsTable.AddAttribute("PosX");
+            seatsTable.AddAttribute("PosY");
+            seatsTable.AddAttribute("Id");
+            seatsTable.AddAttribute("FlightId");
+            seatsTable.AddAttribute("PassengerId");
+
+            return seatsTable;
 
         }
 
