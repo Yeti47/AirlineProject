@@ -6,49 +6,15 @@
         xmlns:local="clr-namespace:Airline.CheckIn"
         xmlns:AirlineData="clr-namespace:Airline.Data;assembly=Airline.Data"
         mc:Ignorable="d"
-        Title="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="768" Width="1024"
-        Loaded="OnWindowLoaded">
+        Title="Bitte auswählen..." Height="240" Width="320"
+        >
     <Grid>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="30" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FF00FFE8" Foreground="#FF385D58" FontWeight="Bold" FontSize="16"/>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="24" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
 
-        <TabControl>
-            <TabItem Header="Check-In">
-                <Grid>
-                    <GroupBox x:Name="grpBookings" Header="Buchungen" Height="400" VerticalAlignment="Top">
-                        <Grid>
-                            <ListView x:Name="lvwBookings" HorizontalAlignment="Left" Height="320" VerticalAlignment="Top" Width="978" Margin="10,10,0,0">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn x:Name="id" Header="ID" Width="50" DisplayMemberBinding="{Binding Path=Id}"/>
-                                        <GridViewColumn x:Name="passenger" Header="Passagier" Width="150" DisplayMemberBinding="{Binding Path=Passenger}"/>
-                                        <GridViewColumn x:Name="flightId" Header="Flugnr." Width="70" DisplayMemberBinding="{Binding Path=Flight.Id}"/>
-                                        <GridViewColumn x:Name="departureAirport" Header="Von" Width="150" DisplayMemberBinding="{Binding Path=Flight.DepartureAirport}"/>
-                                        <GridViewColumn x:Name="destinationAirport" Header="Nach" Width="150" DisplayMemberBinding="{Binding Path=Flight.DestinationAirport}"/>
-                                        <GridViewColumn x:Name="departureTime" Header="Abflug-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfDeparture, StringFormat='dd.MM.yyyy - HH:mm'}"/>
-                                        <GridViewColumn x:Name="arrivalTime" Header="Ankunfts-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfArrival, StringFormat='dd.MM.yyyy - HH:mm'}"/>
-                                        <GridViewColumn x:Name="isWaiting" Header="Status" Width="90" DisplayMemberBinding="{Binding Path=StatusText}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-
-                            <Button x:Name="btnCreateBooking" Content="Festbuchung erstellen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateBooking" Margin="10,348,0,0" Width="140"/>
-                            <Button x:Name="btnCreateStandby" Content="Stand-by-Buchung erstellen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateStandbyBooking" Margin="155,348,0,0" Width="178"/>
-                            <Button x:Name="btnFetchAllBookings" Content="Alle Buchungen anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAllBookings"  Margin="338,348,0,0" Width="178"/>
-
-                        </Grid>
-                    </GroupBox>
-
-                </Grid>
-            </TabItem>
-            <TabItem Header="PIL erstellen">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-            <TabItem Header="Gepäck scannen">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-            
-
-        </TabControl>
-
+        <Button x:Name="btnCheckIn" Content="Check-In" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" DockPanel.Dock="Top" Click="OnClickButtonCheckIn" Background="#FFC4E2E4" FontSize="16" Margin="0,80,0,0"/>
+        <Button x:Name="btnPil" Content="Passenger Information List erstellen" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" DockPanel.Dock="Top" Click="OnClickButtonPil"  Background="#FFC4E2E4" FontSize="16" Margin="0,115,0,0"/>
+        <Button x:Name="btnBaggageScan" Content="Gepäck scannen" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" DockPanel.Dock="Bottom" Click="OnClickButtonBaggageScan" Background="#FFC4E2E4" FontSize="16" Margin="0,150,0,0"/>
 
 
     </Grid>

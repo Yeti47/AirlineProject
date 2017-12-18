@@ -16,9 +16,9 @@ namespace Airline.Data {
 
         public const string DB_CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename='|DataDirectory|\Databases\airline_db.mdf';Integrated Security=True";
 
-        public const string AIRLINE_NAME = "Something Airlines";
+        public const string AIRLINE_NAME = "CyanAir";
 
-        public const string AIRLINE_SLOGAN = "Wird schon schiefgehen!";
+        public const string AIRLINE_SLOGAN = "Into the blue(ish)!";
 
         #endregion
 
@@ -33,6 +33,7 @@ namespace Airline.Data {
 
         public static readonly DatabaseTable PassengerTargetTable;
 
+        public static readonly JoinableDatabaseTable BaggageSourceTable;
         public static readonly DatabaseTable BaggageTargetTable;
 
         #endregion
@@ -50,6 +51,8 @@ namespace Airline.Data {
             PassengerTargetTable = InitializePassengerTargetTable();
 
             BaggageTargetTable = InitializeBaggageTargetTable();
+
+            BaggageSourceTable = InitializeBaggageSourceTable();
 
         }
 
@@ -92,11 +95,13 @@ namespace Airline.Data {
             bookingSourceTable.AddAttribute("flights.TimeOfArrival");
             bookingSourceTable.AddAttribute("flights.SeatRows");
             bookingSourceTable.AddAttribute("flights.SeatsPerRow");
-            //bookingSourceTable.AddAttribute("seats.PosX");
-            //bookingSourceTable.AddAttribute("seats.PosY");
+            bookingSourceTable.AddAttribute("seats.PosX");
+            bookingSourceTable.AddAttribute("seats.PosY");
             bookingSourceTable.AddAttribute("bookings.IsWaiting");
 
-            //bookingSourceTable.CreateJoin("seats", "bookings.FlightId", "FlightId", null, JoinTypes.Left);
+            Join j = bookingSourceTable.CreateJoin("seats", "bookings.PassengerId", "PassengerId", null, JoinTypes.Left);
+            j.CustomCondition = "AND bookings.FlightId = seats.FlightId";
+
             bookingSourceTable.CreateJoin("passengers", "bookings.PassengerId", "Id");
             bookingSourceTable.CreateJoin("flights", "bookings.FlightId", "Id");
             bookingSourceTable.CreateJoin("airports", "flights.DepartureAirportId", "Id", "depAirport");
@@ -154,6 +159,23 @@ namespace Airline.Data {
             baggageTargetTable.AddAttribute("Fee");
 
             return baggageTargetTable;
+
+        }
+
+        private static JoinableDatabaseTable InitializeBaggageSourceTable() {
+
+            JoinableDatabaseTable baggageSourceTable = new JoinableDatabaseTable("baggage");
+            baggageSourceTable.AddAttribute("baggage.Id");
+            baggageSourceTable.AddAttribute("baggage.FlightId");
+            baggageSourceTable.AddAttribute("baggage.Weight");
+            baggageSourceTable.AddAttribute("baggage.Fee");
+            baggageSourceTable.AddAttribute("passengers.Title");
+            baggageSourceTable.AddAttribute("passengers.FirstName");
+            baggageSourceTable.AddAttribute("passengers.LastName");
+
+            baggageSourceTable.CreateJoin("passengers", "baggage.PassengerId", "passengers.Id");
+
+            return baggageSourceTable;
 
         }
 

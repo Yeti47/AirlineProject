@@ -27,6 +27,8 @@ namespace DatabaseExchange {
 
         public bool IsEqui { get; set; } = true;
 
+        public string CustomCondition { get; set; }
+
         public string TargetTable {
 
             get => _targetTable;
@@ -100,7 +102,7 @@ namespace DatabaseExchange {
         public override string ToString() {
 
             return $"{JoinType.ToString().ToUpper()} JOIN {_targetTable} {TargetTableAlias ?? ""} ON " +
-                $"{_sourceColumn} {ComparisonOperator} {TargetTableAlias ?? _targetTable}.{_targetColumn}";
+                $"{_sourceColumn} {ComparisonOperator} {TargetTableAlias ?? _targetTable}.{_targetColumn} {CustomCondition ?? ""}";
 
         }
 

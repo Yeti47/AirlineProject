@@ -71,11 +71,22 @@ namespace Airline.Data {
 
         public decimal Fee => Math.Max(Math.Ceiling(_weight - _weightLimit) * _feePerExtraKilogram, 0);
 
+        public decimal BookedFee { get; }
+
         #endregion
 
         #region Constructors
 
         public Baggage() {
+
+        }
+
+        public Baggage(int id, int flightId, decimal weight, decimal fee) {
+
+            Id = id;
+            FlightId = flightId;
+            Weight = weight;
+            BookedFee = fee;
 
         }
 

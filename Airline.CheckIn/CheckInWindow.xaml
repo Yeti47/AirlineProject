@@ -1,0 +1,42 @@
+﻿<Window x:Class="Airline.CheckIn.CheckInWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Airline.CheckIn"
+        xmlns:AirlineData="clr-namespace:Airline.Data;assembly=Airline.Data"
+        mc:Ignorable="d"
+        Title="Check-In" Height="768" Width="1024"
+        Loaded="OnWindowLoaded">
+    <Grid>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="30" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FF00FFE8" Foreground="#FF385D58" FontWeight="Bold" FontSize="16"/>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="24" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
+
+        <Button x:Name="btnCreateBooking" Content="Festbuchung erstellen" HorizontalContentAlignment="Center"  HorizontalAlignment="Right" VerticalAlignment="Top" Click="OnClickButtonCreateBooking" Margin="0,223,26,0" Width="214" Height="52" FontSize="16" Background="#FF00AEFF"/>
+        <Button x:Name="btnCreateStandby" Content="Stand-by-Buchung erstellen" HorizontalAlignment="Right" VerticalAlignment="Top" Click="OnClickButtonCreateStandbyBooking" Margin="0,280,26,0" Width="214" Height="52" FontSize="16" Background="#FFFFE800"/>
+
+        <GroupBox x:Name="grpBookings" Header="Buchungen" Height="400" VerticalAlignment="Top" Margin="0,337,0,0">
+            <Grid>
+                <ListView x:Name="lvwBookings" HorizontalAlignment="stretch" Height="288" VerticalAlignment="Top" Margin="10,10,10,0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn x:Name="id" Header="ID" Width="50" DisplayMemberBinding="{Binding Path=Id}"/>
+                            <GridViewColumn x:Name="passenger" Header="Passagier" Width="150" DisplayMemberBinding="{Binding Path=Passenger}"/>
+                            <GridViewColumn x:Name="flightId" Header="Flugnr." Width="70" DisplayMemberBinding="{Binding Path=Flight.Id}"/>
+                            <GridViewColumn x:Name="departureAirport" Header="Von" Width="150" DisplayMemberBinding="{Binding Path=Flight.DepartureAirport}"/>
+                            <GridViewColumn x:Name="destinationAirport" Header="Nach" Width="150" DisplayMemberBinding="{Binding Path=Flight.DestinationAirport}"/>
+                            <GridViewColumn x:Name="departureTime" Header="Abflug-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfDeparture, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="arrivalTime" Header="Ankunfts-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfArrival, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="isWaiting" Header="Status" Width="60" DisplayMemberBinding="{Binding Path=StatusText}"/>
+                            <GridViewColumn x:Name="seatNumber" Header="Sitz" Width="110" DisplayMemberBinding="{Binding Path=SeatNumber}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <Button x:Name="btnFetchAllBookings" Content="Alle Buchungen anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAllBookings"  Margin="10,303,0,0" Width="178"/>
+
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+</Window>

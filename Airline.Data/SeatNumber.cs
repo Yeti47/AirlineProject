@@ -42,7 +42,7 @@ namespace Airline.Data {
 
         }
 
-        public override string ToString() => $"({X}|{Y})";
+        public override string ToString() => $"Reihe: {Y} | Platz: {X}";
 
     }
 

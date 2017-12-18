@@ -27,6 +27,8 @@ namespace Airline.Data {
 
         public string StatusText => IsWaiting ? "Wartet" : "Fest";
 
+        public SeatNumber? SeatNumber { get; set; }
+
         #endregion
 
         #region Constructors
@@ -74,6 +76,11 @@ namespace Airline.Data {
             Booking booking = new Booking(bookingId, flight, passenger) {
                 IsWaiting = isWaiting
             };
+
+            if (!isWaiting)
+                booking.SeatNumber = new SeatNumber((int)attributes["seats.PosX"], (int)attributes["seats.PosY"]);
+            else
+                booking.SeatNumber = null;
 
             return booking;
 

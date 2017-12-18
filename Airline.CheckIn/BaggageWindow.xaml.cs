@@ -51,6 +51,8 @@ namespace Airline.CheckIn {
 
         public Baggage Baggage { get; set; }
 
+        public bool HasValidInput => PreviewBaggage != null && PreviewBaggage.Weight > 0;
+
         #endregion
 
         #region Constructors
@@ -89,6 +91,8 @@ namespace Airline.CheckIn {
             baggageFeeTable.AddAttribute("FeePerKilogram");
 
             _baggageFeeMapper.SourceTable = baggageFeeTable;
+
+            btnOkay.IsEnabled = HasValidInput;
 
         }
 
@@ -135,6 +139,12 @@ namespace Airline.CheckIn {
 
         private void OnClickButtonOkay(object sender, RoutedEventArgs e) {
 
+            if(!HasValidInput) {
+
+                MessageBox.Show("Es wurde kein gültiges Gewicht eingegeben.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (Baggage != null) {
 
                 Baggage.Weight = PreviewBaggage.Weight;
@@ -154,7 +164,14 @@ namespace Airline.CheckIn {
 
         }
 
+        private void OnTextWeightChanged(object sender, TextChangedEventArgs e) {
+
+            btnOkay.IsEnabled = HasValidInput;
+
+        }
+
         #endregion
+
 
     }
 

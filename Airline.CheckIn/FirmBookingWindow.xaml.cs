@@ -17,10 +17,11 @@ using DatabaseExchange;
 using System.Data.SqlClient;
 
 namespace Airline.CheckIn {
+
     /// <summary>
     /// Interaktionslogik für BookingWindow.xaml
     /// </summary>
-    public partial class BookingWindow : Window {
+    public partial class CreateBookingWindow : Window {
 
         #region Constants
 
@@ -58,11 +59,26 @@ namespace Airline.CheckIn {
 
         public Flight SelectedFlight => lvwFlights.SelectedItem as Flight;
 
+        public bool HasValidInput {
+
+            get {
+
+                return cmbTitle.SelectedIndex >= 0
+                    && !string.IsNullOrWhiteSpace(txtFirstName.Text)
+                    && !string.IsNullOrWhiteSpace(txtLastName.Text)
+                    && (SelectedFlight != null)
+                    && (!SelectedFlight.IsInternational || !string.IsNullOrWhiteSpace(txtPassportId.Text))
+                    && (Booking.IsWaiting || (cmbSeat.SelectedItem as SeatNumber?) != null);
+
+            }
+
+        }
+
         #endregion
 
         #region Constructors
 
-        public BookingWindow(bool isFirm = true) {
+        public CreateBookingWindow(bool isFirm = true) {
 
             InitializeComponent();
 
@@ -158,6 +174,9 @@ namespace Airline.CheckIn {
 
             }
 
+            if (lvwFlights.Items.Count > 0)
+                lvwFlights.SelectedIndex = 0;
+
         }
 
         private void OnClickButtonFetchFlights(object sender, RoutedEventArgs e) {
@@ -174,6 +193,26 @@ namespace Airline.CheckIn {
         }
 
         private void OnClickButtonOkay(object sender, RoutedEventArgs e) {
+
+            txtFirstName.Text = txtFirstName.Text?.Trim();
+            txtLastName.Text = txtLastName.Text?.Trim();
+            txtPassportId.Text = txtPassportId.Text?.Trim();
+
+            if (!HasValidInput) {
+
+                MessageBox.Show("Bitte zunächst alle erforderlichen Daten eingeben.", "Fehlende Eingaben", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+
+            }
+
+            if(!Booking.IsWaiting && Booking.Passenger.Baggage.Count() < 1) {
+
+                MessageBoxResult messageBoxResult = MessageBox.Show("Sind Sie sicher, dass Sie für diese Buchung keine Gepäckstücke hinterlegen möchten?", "Kein Gepäck angegeben", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
+                if (messageBoxResult != MessageBoxResult.Yes)
+                    return;
+
+            }
 
             // In Datenbank schreiben
             int? newBookingId = WriteBookingToDatabase();
@@ -202,6 +241,8 @@ namespace Airline.CheckIn {
 
             Booking.Id = newBookingId.Value;
             Booking.Flight = SelectedFlight;
+
+            Booking.SeatNumber = cmbSeat.SelectedItem as SeatNumber?;
 
             // Fenster mit Erfolg-Meldung schließen
             DialogResult = true;
@@ -313,7 +354,7 @@ namespace Airline.CheckIn {
 
             if(SelectedFlight == null) {
 
-                MessageBox.Show("Sitzplatz kann nicht in die Datenbank geschrieben werden, da kein FLug ausgewählt wurde.");
+                MessageBox.Show("Sitzplatz kann nicht in die Datenbank geschrieben werden, da kein Flug ausgewählt wurde.");
 
                 return false;
 
@@ -459,7 +500,6 @@ namespace Airline.CheckIn {
         }
 
         #endregion
-
 
     }
 

@@ -26,10 +26,6 @@ namespace Airline.CheckIn {
 
         #region Fields
 
-        private ObservableCollection<Booking> _bookings = new ObservableCollection<Booking>();
-
-        private ObjectRelationalMapper<Booking> _bookingMapper = new ObjectRelationalMapper<Booking>(Config.DB_CONNECTION_STRING, Config.BookingSourceTable);
-
         #endregion
 
         #region Properties
@@ -42,9 +38,6 @@ namespace Airline.CheckIn {
 
             InitializeComponent();
 
-            lvwBookings.Items.Clear();
-            lvwBookings.ItemsSource = _bookings;
-
         }
 
 
@@ -52,61 +45,27 @@ namespace Airline.CheckIn {
 
         #region Methods
 
-        private void OnWindowLoaded(object sender, RoutedEventArgs e) {
+        private void OnClickButtonCheckIn(object sender, RoutedEventArgs e) {
 
-            PopulateBookingListView();
+            CheckInWindow checkInWindow = new CheckInWindow();
 
-        }
-
-        private void PopulateBookingListView() {
-
-            FetchResult<Booking> fetchResult = _bookingMapper.Fetch(Booking.CreateFromDataRecord);
-
-            if (fetchResult.HasError)
-                MessageBox.Show("Fehler beim Einholen der Buchungen. \r\n\r\nDetails:\r\n" + fetchResult.ErrorDetails, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-            else {
-
-                _bookings.Clear();
-                
-                foreach (Booking booking in fetchResult.RetrievedItems)
-                    _bookings.Add(booking);
-
-            }
-        }
-
-        private void OnClickButtonCreateBooking(object sender, RoutedEventArgs e) {
-
-            ShowBookingWindow();
-
+            checkInWindow.ShowDialog();
 
         }
 
-        private void OnClickButtonCreateStandbyBooking(object sender, RoutedEventArgs e) {
+        private void OnClickButtonPil(object sender, RoutedEventArgs e) {
 
-            ShowBookingWindow(false);
+            PassengerInformationListWindow pilWindow = new PassengerInformationListWindow();
 
-        }
-
-        private void ShowBookingWindow(bool isFirmBooking = true) {
-
-            BookingWindow bookingWindow = new BookingWindow(isFirmBooking);
-
-            bool? dialogResult = bookingWindow.ShowDialog();
-
-            if (!dialogResult.HasValue)
-                return;
-
-            if (dialogResult.Value) {
-
-                _bookings.Add(bookingWindow.Booking);
-
-            }
+            pilWindow.ShowDialog();
 
         }
 
-        private void OnClickButtonFetchAllBookings(object sender, RoutedEventArgs e) {
+        private void OnClickButtonBaggageScan(object sender, RoutedEventArgs e) {
 
-            PopulateBookingListView();
+            BaggageScanWindow baggageScanWindow = new BaggageScanWindow();
+
+            baggageScanWindow.ShowDialog();
 
         }
 
