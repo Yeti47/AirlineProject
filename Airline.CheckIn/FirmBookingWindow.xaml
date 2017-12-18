@@ -76,6 +76,7 @@
                 <Label x:Name="lblTotalFee" Content="Gesamtgebühr:" HorizontalAlignment="Left" Margin="10,153,0,0" VerticalAlignment="Top"/>
                 <TextBox x:Name="txtTotalWeight" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="125,126,0,0" TextWrapping="Wrap" Text="{Binding Path=Passenger.TotalBaggageWeight, Mode=OneWay}" VerticalAlignment="Top" Width="120"/>
                 <TextBox x:Name="txtTotalFee" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="125,157,0,0" TextWrapping="Wrap" Text="{Binding Path=Passenger.TotalBaggageFee, Mode=OneWay}" VerticalAlignment="Top" Width="120"/>
+                <Button x:Name="btnPrintLabel" Content="Label drucken" HorizontalAlignment="Left" Margin="271,126,0,0" VerticalAlignment="Top" Width="143" Click="OnClickButtonPrintLabel"  Height="23"/>
 
             </Grid>
         </GroupBox>

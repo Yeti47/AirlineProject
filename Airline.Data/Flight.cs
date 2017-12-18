@@ -42,7 +42,7 @@ namespace Airline.Data {
 
         }
 
-        public string FlightTypeText => IsInternational ? "International" : "National";
+        public string FlightTypeText => IsInternational ? "International" : "Inland";
 
         public IEnumerable<SeatNumber> TakenSeatNumbers { get; set; }
 

@@ -90,6 +90,8 @@ namespace Airline.Data {
 
         }
 
+        public void PrintLabel() => throw new NotImplementedException("Cannot print at the current state of development.");
+
         #endregion
 
     }

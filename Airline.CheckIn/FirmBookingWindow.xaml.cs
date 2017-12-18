@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using Airline.Data;
 using DatabaseExchange;
+using System.Data.SqlClient;
 
 namespace Airline.CheckIn {
     /// <summary>
@@ -25,6 +26,7 @@ namespace Airline.CheckIn {
 
         private const string ERROR_NO_BAGGAGE_SELECTED = "Es wurde kein Gepäckstück asugewählt.";
         private const string ERROR_BAGGAGE_REMOVAL = "Aufgrund eines unbekannten Fehlers, konnte das Gepäckstück nicht entfernt werden.";
+        private const string ERROR_NO_PRINTER = "Es konnte keine Verbindung zum Druck-Server aufgebaut werden. Tja, schade! Dann benutzen Sie doch einfach Stift und Papier!";
 
         #endregion
 
@@ -87,6 +89,9 @@ namespace Airline.CheckIn {
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e) {
 
+            txtPassportId.IsEnabled = lblPassportId.IsEnabled = false;
+
+            PopulateFlightList();
             PopulateTitleListBox();
 
         }
@@ -170,6 +175,38 @@ namespace Airline.CheckIn {
 
         private void OnClickButtonOkay(object sender, RoutedEventArgs e) {
 
+            // In Datenbank schreiben
+            int? newBookingId = WriteBookingToDatabase();
+
+            if(!newBookingId.HasValue) {
+
+                MessageBox.Show("Die Buchung ist leider fehlgeschlagen.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+
+            }
+            else {
+
+                MessageBox.Show("Die Buchung wurde erfolgreich unter der ID " + newBookingId.Value + " angelegt.", "Erfolg");
+
+            }
+
+            // eingegebene Daten für lokale Booking-Instanz übernehmen, damit Änderungen direkt sichtbar sind
+            if (Enum.TryParse(cmbTitle.SelectedItem.ToString(), out Title passengerTitle))
+                Booking.Passenger.Title = passengerTitle;
+
+            if(SelectedFlight.IsInternational)
+                Booking.Passenger.PassportId = txtPassportId.Text;
+
+            Booking.Passenger.FirstName = txtFirstName.Text;
+            Booking.Passenger.LastName = txtLastName.Text;
+
+            Booking.Id = newBookingId.Value;
+            Booking.Flight = SelectedFlight;
+
+            // Fenster mit Erfolg-Meldung schließen
+            DialogResult = true;
+
+
         }
 
         private void OnClickButtonAddBaggage(object sender, RoutedEventArgs e) {
@@ -228,6 +265,196 @@ namespace Airline.CheckIn {
             cmbSeat.ItemsSource = SelectedFlight?.AvailableSeatNumbers;
             txtPassportId.IsEnabled = SelectedFlight?.IsInternational ?? false;
             lblPassportId.IsEnabled = txtPassportId.IsEnabled;
+
+        }
+
+        private int? WritePassengerToDatabase() {
+
+            if (!Enum.TryParse(cmbTitle.SelectedItem?.ToString(), out Title passengerTitle)) {
+
+                MessageBox.Show("Kann Fluggast nicht in die Datenbank schreiben. Fehler beim Parsen der Anrede.");
+                return null;
+
+            }
+
+            if(SelectedFlight == null) {
+
+                MessageBox.Show("Kann Fluggast nicht in die Datenbank schreiben. Es wurde kein Flug ausgewählt.");
+                return null;
+            }
+
+            if (SelectedFlight.IsInternational)
+                Booking.Passenger.PassportId = txtPassportId.Text;
+                
+            ObjectRelationalMapper<Passenger> passengerMapper = new ObjectRelationalMapper<Passenger>(Config.DB_CONNECTION_STRING, null, Config.PassengerTargetTable);
+
+            List<SqlParameter> passengerSqlParams = new List<SqlParameter>();
+            passengerSqlParams.Add(new SqlParameter("@Title", passengerTitle));
+            passengerSqlParams.Add(new SqlParameter("@FirstName", txtFirstName.Text));
+            passengerSqlParams.Add(new SqlParameter("@LastName", txtLastName.Text));
+
+            if(SelectedFlight.IsInternational)
+                passengerSqlParams.Add(new SqlParameter("@PassportNumber", Booking.Passenger.PassportId));
+
+            ActionQueryResult passengerInsertResult = passengerMapper.Insert(passengerSqlParams.ToArray(), "Id", out int outputId);
+
+            if(passengerInsertResult.HasError) {
+
+                MessageBox.Show("Fehler beim Schreiben des Fluggastes in die Datenbank.\r\n\r\nDetails:\r\n" + passengerInsertResult, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+
+            }
+
+            return outputId;
+
+        }
+
+        private bool WriteSeatToDatabase(int passengerId) {
+
+            if(SelectedFlight == null) {
+
+                MessageBox.Show("Sitzplatz kann nicht in die Datenbank geschrieben werden, da kein FLug ausgewählt wurde.");
+
+                return false;
+
+            }
+
+            SeatNumber? seatNumber = cmbSeat.SelectedItem as SeatNumber?;
+
+            if(!seatNumber.HasValue) {
+
+                MessageBox.Show("Sitznummer konnte nicht in die Datenbank geschrieben werden. Es wurde keine Sitznummer ausgewählt.");
+                return false;
+
+            }
+
+            SeatNumber seat = seatNumber.Value;
+
+            ObjectRelationalMapper<Passenger> seatMapper = new ObjectRelationalMapper<Passenger>(Config.DB_CONNECTION_STRING, null, Config.SeatsTable);
+
+            ActionQueryResult seatQueryResult = seatMapper.Insert(new SqlParameter[] {
+                new SqlParameter("@PosX", seat.X),
+                new SqlParameter("@PosY", seat.Y),
+                new SqlParameter("@FlightId", SelectedFlight.Id),
+                new SqlParameter("@PassengerId", passengerId)
+            });
+
+            if(seatQueryResult.HasError) {
+
+                MessageBox.Show("Fehler beim Schreiben des Sitzokatzes in die Datenbank.\r\n\r\nDetails:\r\n" + seatQueryResult, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+
+            }
+
+            return true;
+
+        }
+
+        private int? WriteRawBookingToDatabase(int passengerId) {
+
+            if (SelectedFlight == null) {
+
+                MessageBox.Show("Buchung kann nicht in die Datenbank geschrieben werden, da kein FLug ausgewählt wurde.");
+                return null;
+
+            }
+
+            ObjectRelationalMapper<Booking> bookingMapper = new ObjectRelationalMapper<Booking>(Config.DB_CONNECTION_STRING, null, Config.BookingTargetTable);
+
+            SqlParameter[] sqlParams = new SqlParameter[] {
+                new SqlParameter("@PassengerId", passengerId),
+                new SqlParameter("@FlightId", SelectedFlight.Id),
+                new SqlParameter("@IsWaiting", Booking.IsWaiting)
+            };
+
+            ActionQueryResult bookingQueryResult = bookingMapper.Insert(sqlParams, "Id", out int outputId);
+
+            if (bookingQueryResult.HasError) {
+
+                MessageBox.Show("Fehler beim Schreiben der Buchungsdaten in die Datenbank.\r\n\r\nDetails:\r\n" + bookingQueryResult, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+
+            }
+
+            return outputId;
+
+        }
+
+        private bool WriteBaggageToDatabase(int passengerId) {
+
+            if (SelectedFlight == null) {
+
+                MessageBox.Show("Die Gepäcksücke können nicht in die Datenbank geschrieben werden, da kein Flug ausgewählt wurde.");
+                return false;
+
+            }
+
+            ObjectRelationalMapper<Baggage> baggageMapper = new ObjectRelationalMapper<Baggage>(Config.DB_CONNECTION_STRING, null, Config.BaggageTargetTable);
+
+            foreach(Baggage bg in Booking.Passenger.Baggage) {
+
+                SqlParameter[] sqlParams = new SqlParameter[] {
+                    new SqlParameter("@FlightId", SelectedFlight.Id),
+                    new SqlParameter("@PassengerId", passengerId),
+                    new SqlParameter("@Weight", bg.Weight),
+                    new SqlParameter("@Fee", bg.Fee)
+                };
+
+                ActionQueryResult baggageQueryResult = baggageMapper.Insert(sqlParams);
+
+                if(baggageQueryResult.HasError) {
+
+                    MessageBox.Show("Fehler beim Schreiben eines Gepäckstücks in die Datenbank.\r\n\r\nDetails:\r\n" + baggageQueryResult, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+
+                }
+
+            }
+
+            return true;
+
+        }
+
+        private int? WriteBookingToDatabase() {
+
+            if(SelectedFlight == null) {
+
+                MessageBox.Show("Buchung kann nicht erstellt werden. Es wurde kein Flug ausgewählt.");
+
+                return null;
+            }
+
+            int? passengerId = WritePassengerToDatabase();
+
+            if (!passengerId.HasValue)
+                return null;
+
+            if(!Booking.IsWaiting) {
+
+                if (!WriteSeatToDatabase(passengerId.Value))
+                    return null;
+
+            }
+
+            if(Booking.Passenger.Baggage.Count() > 0) {
+
+                if (!WriteBaggageToDatabase(passengerId.Value))
+                    return null;
+
+            }
+
+            int? bookingId = WriteRawBookingToDatabase(passengerId.Value);
+
+            if (!bookingId.HasValue)
+                return null;
+
+            return bookingId;
+
+        }
+
+        private void OnClickButtonPrintLabel(object sender, RoutedEventArgs e) {
+
+            MessageBox.Show(ERROR_NO_PRINTER, "Drucken nicht möglich", MessageBoxButton.OK, MessageBoxImage.Information);
 
         }
 

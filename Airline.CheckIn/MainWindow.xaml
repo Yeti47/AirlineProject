@@ -30,7 +30,9 @@
                                 </ListView.View>
                             </ListView>
 
-                            <Button x:Name="btnCreateBooking" Content="Festbuchung erstellen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateBooking" Margin="10,348,0,0"/>
+                            <Button x:Name="btnCreateBooking" Content="Festbuchung erstellen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateBooking" Margin="10,348,0,0" Width="140"/>
+                            <Button x:Name="btnCreateStandby" Content="Stand-by-Buchung erstellen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateStandbyBooking" Margin="155,348,0,0" Width="178"/>
+                            <Button x:Name="btnFetchAllBookings" Content="Alle Buchungen anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAllBookings"  Margin="338,348,0,0" Width="178"/>
 
                         </Grid>
                     </GroupBox>

@@ -76,19 +76,37 @@ namespace Airline.CheckIn {
 
         private void OnClickButtonCreateBooking(object sender, RoutedEventArgs e) {
 
-            BookingWindow bookingWindow = new BookingWindow();
+            ShowBookingWindow();
+
+
+        }
+
+        private void OnClickButtonCreateStandbyBooking(object sender, RoutedEventArgs e) {
+
+            ShowBookingWindow(false);
+
+        }
+
+        private void ShowBookingWindow(bool isFirmBooking = true) {
+
+            BookingWindow bookingWindow = new BookingWindow(isFirmBooking);
 
             bool? dialogResult = bookingWindow.ShowDialog();
 
             if (!dialogResult.HasValue)
                 return;
 
-            if(dialogResult.Value) {
+            if (dialogResult.Value) {
 
-                // Booking created successfully
+                _bookings.Add(bookingWindow.Booking);
 
             }
 
+        }
+
+        private void OnClickButtonFetchAllBookings(object sender, RoutedEventArgs e) {
+
+            PopulateBookingListView();
 
         }
 

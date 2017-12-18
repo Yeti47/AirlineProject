@@ -25,9 +25,15 @@ namespace Airline.Data {
         #region Static Readonly Fields
 
         public static readonly JoinableDatabaseTable BookingSourceTable;
+        public static readonly DatabaseTable BookingTargetTable;
+
         public static readonly JoinableDatabaseTable FlightSourceTable;
 
         public static readonly DatabaseTable SeatsTable;
+
+        public static readonly DatabaseTable PassengerTargetTable;
+
+        public static readonly DatabaseTable BaggageTargetTable;
 
         #endregion
 
@@ -38,6 +44,12 @@ namespace Airline.Data {
             FlightSourceTable = InitializeFlightSourceTable();
             BookingSourceTable = InitializeBookingSourceTable();
             SeatsTable = InitializeSeatsTable();
+
+            BookingTargetTable = InitializeBookingTargetTable();
+
+            PassengerTargetTable = InitializePassengerTargetTable();
+
+            BaggageTargetTable = InitializeBaggageTargetTable();
 
         }
 
@@ -104,6 +116,44 @@ namespace Airline.Data {
             seatsTable.AddAttribute("PassengerId");
 
             return seatsTable;
+
+        }
+
+        private static DatabaseTable InitializeBookingTargetTable() {
+
+            DatabaseTable bookingTargetTable = new DatabaseTable("bookings");
+            bookingTargetTable.AddAttribute("Id");
+            bookingTargetTable.AddAttribute("PassengerId");
+            bookingTargetTable.AddAttribute("FlightId");
+            bookingTargetTable.AddAttribute("IsWaiting");
+
+            return bookingTargetTable;
+
+        }
+
+        private static DatabaseTable InitializePassengerTargetTable() {
+
+            DatabaseTable passengerTargetTable = new DatabaseTable("passengers");
+            passengerTargetTable.AddAttribute("Id");
+            passengerTargetTable.AddAttribute("Title");
+            passengerTargetTable.AddAttribute("FirstName");
+            passengerTargetTable.AddAttribute("LastName");
+            passengerTargetTable.AddAttribute("PassportNumber");
+
+            return passengerTargetTable;
+
+        }
+
+        private static DatabaseTable InitializeBaggageTargetTable() {
+
+            DatabaseTable baggageTargetTable = new DatabaseTable("baggage");
+            baggageTargetTable.AddAttribute("Id");
+            baggageTargetTable.AddAttribute("FlightId");
+            baggageTargetTable.AddAttribute("PassengerId");
+            baggageTargetTable.AddAttribute("Weight");
+            baggageTargetTable.AddAttribute("Fee");
+
+            return baggageTargetTable;
 
         }
 

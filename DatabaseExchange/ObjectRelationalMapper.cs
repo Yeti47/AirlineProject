@@ -190,6 +190,64 @@ namespace DatabaseExchange {
 
         }
 
+        public ActionQueryResult Insert<TOut>(SqlParameter[] sqlParams, string outputParamName, out TOut output) {
+
+            if (TargetTable == null)
+                throw new InvalidOperationException("Cannot perform insert operation, since the TargetTable has not been defined.");
+
+            if (string.IsNullOrWhiteSpace(outputParamName))
+                throw new ArgumentNullException("The output parameter name must not be empty.");
+
+            output = default(TOut);
+
+            int numAffectedRows = 0;
+            string errorDetails = null;
+
+            string sql = $"INSERT INTO {TargetTable.Name} (";
+
+            IEnumerable<string> attrNames = sqlParams.Select(p => p.ParameterName.TrimStart('@')).Intersect(TargetTable.AttributeIdentifiers, StringComparer.OrdinalIgnoreCase);
+
+            string attrSql = string.Join(", ", attrNames);
+
+            sql += attrSql + ") ";
+
+            sql += $"OUTPUT Inserted.{outputParamName}";
+
+            sql += " VALUES (@" + string.Join(", @", attrNames) + ")";
+
+            using (SqlConnection connection = new SqlConnection(ConnectionString)) {
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                if (sqlParams != null)
+                    command.Parameters.AddRange(sqlParams);
+
+                try {
+
+                    connection.Open();
+
+                    object outObj = command.ExecuteScalar();
+
+                    output = (TOut)outObj;
+
+                    numAffectedRows = 1;
+
+                }
+                catch (Exception e) {
+
+                    if (StrictErrorHandling)
+                        throw e;
+
+                    errorDetails = e.Message;
+
+                }
+
+            }
+
+            return new ActionQueryResult(sql, numAffectedRows, errorDetails);
+
+        }
+
         public ActionQueryResult Update(SqlParameter[] sqlParams, string whereClause, SqlParameter[] whereParams = null) {
 
             if (TargetTable == null)
