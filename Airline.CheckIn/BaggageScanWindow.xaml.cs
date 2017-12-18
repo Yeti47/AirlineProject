@@ -34,18 +34,20 @@ namespace Airline.CheckIn
         private const string SCAN_POSITIVE = "Das eingescannte Gepäckstück gehört zu diesem Flug.";
         private const string SCAN_NEGATIVE = "Das eingescannte Gepäckstück ist ein Irrläufer.";
 
-        private const string ERROR_INVALID_INPUT = "Bitte entweder Scan-Gerät anschließen oder gültige Daten manuell eingeben.";
+        private const string ERROR_INVALID_INPUT = "Bitte entweder Scan-Gerät anschließen oder gültige Gepäck-ID manuell eingeben.";
+        private const string ERROR_NO_FLIGHT_SELECTED = "Bitte einen Flug auswählen.";
 
         #endregion
 
         #region Fields
 
         private int? _baggageId;
-        private int? _flightId;
 
         private ObservableCollection<Baggage> _baggage = new ObservableCollection<Baggage>();
+        private ObservableCollection<Flight> _flights = new ObservableCollection<Flight>();
 
         private ObjectRelationalMapper<Baggage> _baggageMapper;
+        private ObjectRelationalMapper<Flight> _flightsMapper;
 
         #endregion
 
@@ -61,15 +63,7 @@ namespace Airline.CheckIn
 
         }
 
-        public int? FlightId {
-
-            get => _flightId;
-            set {
-                _flightId = value;
-                OnPropertyChanged();
-            }
-
-        }
+        public Flight SelectedFlight => lvwFlights?.SelectedItem as Flight;
 
         #endregion
 
@@ -86,9 +80,13 @@ namespace Airline.CheckIn
             InitializeComponent();
 
             _baggageMapper = new ObjectRelationalMapper<Baggage>(Config.DB_CONNECTION_STRING, Config.BaggageTargetTable);
+            _flightsMapper = new ObjectRelationalMapper<Flight>(Config.DB_CONNECTION_STRING, Config.FlightSourceTable);
 
             lvwBaggage.Items.Clear();
             lvwBaggage.ItemsSource = _baggage;
+
+            lvwFlights.Items.Clear();
+            lvwFlights.ItemsSource = _flights;
 
             DataContext = this;
 
@@ -137,9 +135,14 @@ namespace Airline.CheckIn
             if (_baggageMapper == null)
                 return;
 
-            
+            if(SelectedFlight == null) {
 
-            if(BaggageId == null || FlightId == null || txtBaggageId.GetBindingExpression(TextBox.TextProperty).HasError || txtFlightId.GetBindingExpression(TextBox.TextProperty).HasError) {
+                MessageBox.Show(ERROR_NO_FLIGHT_SELECTED, "Kein Flug gewählt");
+                return;
+
+            }
+
+            if(BaggageId == null || txtBaggageId.GetBindingExpression(TextBox.TextProperty).HasError) {
 
                 MessageBox.Show(ERROR_INVALID_INPUT, "Scan nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -148,7 +151,7 @@ namespace Airline.CheckIn
 
             FetchResult<Baggage> baggageFetchResult = _baggageMapper.Fetch(attr => new Baggage((int)attr["Id"], (int)attr["FlightId"], (decimal)attr["Weight"], (decimal)attr["Fee"]), 
                 "Id=@Id AND FlightId=@FlightID", 
-                new SqlParameter[] { new SqlParameter("@Id", BaggageId), new SqlParameter("@FlightId", FlightId) }
+                new SqlParameter[] { new SqlParameter("@Id", BaggageId), new SqlParameter("@FlightId", SelectedFlight.Id) }
             );
 
             if (baggageFetchResult.HasError) {
@@ -165,6 +168,46 @@ namespace Airline.CheckIn
         }
 
         private void OnClickButtonReset(object sender, RoutedEventArgs e) => _baggage?.Clear();
+
+        private void OnWindowLoaded(object sender, RoutedEventArgs e) => PopulateFlightList();
+
+        private void PopulateFlightList() {
+
+            FetchResult<Flight> flightsFetched = _flightsMapper.Fetch(attr => {
+
+                Airport departureAp = new Airport(attr["depAirport.Country"].ToString(), attr["depAirport.City"].ToString());
+                Airport destinationAp = new Airport(attr["destAirport.Country"].ToString(), attr["destAirport.City"].ToString());
+
+                return
+                    new Flight((int)attr["flights.Id"],
+                    (DateTime)attr["TimeOfDeparture"],
+                    (DateTime)attr["TimeOfArrival"],
+                    departureAp, destinationAp,
+                    (int)attr["SeatRows"],
+                    (int)attr["SeatsPerRow"]);
+
+            });
+
+            if (flightsFetched.HasError) {
+
+                MessageBox.Show("Leider ist ein Fehler beim Abrufen der Flüge aufgetreten.\r\n\r\n Details:\r\n" + flightsFetched.ErrorDetails, "Fehler");
+
+            }
+            else {
+
+                _flights.Clear();
+
+                foreach (Flight flight in flightsFetched.RetrievedItems)
+                    _flights.Add(flight);
+
+            }
+
+            if (lvwFlights.Items.Count > 0)
+                lvwFlights.SelectedIndex = 0;
+
+        }
+
+        private void OnClickButtonRefreshFlights(object sender, RoutedEventArgs e) => PopulateFlightList();
 
         #endregion
 

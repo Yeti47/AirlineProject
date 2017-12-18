@@ -18,7 +18,7 @@ namespace Airline.Data {
 
         public const string AIRLINE_NAME = "CyanAir";
 
-        public const string AIRLINE_SLOGAN = "Into the blue(ish)!";
+        public const string AIRLINE_SLOGAN = "Pretty fly for a cyan guy!";
 
         #endregion
 

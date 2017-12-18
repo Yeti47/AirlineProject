@@ -64,7 +64,7 @@
                 <ListView x:Name="lvwBaggage" HorizontalAlignment="Left" Height="117"  VerticalAlignment="Top" Width="247" Margin="177,0,0,0">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn x:Name="weight" Header="Gewicht" Width="120" DisplayMemberBinding="{Binding Weight, StringFormat=F2}" />
+                            <GridViewColumn x:Name="weight" Header="Gewicht" Width="120" DisplayMemberBinding="{Binding Weight, StringFormat='{}{0:F2} kg'}" />
                             <GridViewColumn x:Name="fee" Header="Gebühr" Width="120" DisplayMemberBinding="{Binding Fee, StringFormat=C}"/>
                         </GridView>
                     </ListView.View>
@@ -74,7 +74,7 @@
                 <Button x:Name="btnRemoveBaggage" Content="Entfernen" HorizontalAlignment="Left" Margin="13,60,0,0" VerticalAlignment="Top" Width="149" Click="OnClickButtonRemoveBaggage" Background="#FFFFAF97"/>
                 <Label x:Name="lblTotalWeight" Content="Gesamtgewicht:" HorizontalAlignment="Left" Margin="10,133,0,0" VerticalAlignment="Top"/>
                 <Label x:Name="lblTotalFee" Content="Gesamtgebühr:" HorizontalAlignment="Left" Margin="10,164,0,0" VerticalAlignment="Top"/>
-                <TextBox x:Name="txtTotalWeight" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="125,137,0,0" TextWrapping="Wrap" Text="{Binding Path=Passenger.TotalBaggageWeight, Mode=OneWay, StringFormat=F2}" VerticalAlignment="Top" Width="120"/>
+                <TextBox x:Name="txtTotalWeight" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="125,137,0,0" TextWrapping="Wrap" Text="{Binding Path=Passenger.TotalBaggageWeight, Mode=OneWay, StringFormat='{}{0:F2} kg'}" VerticalAlignment="Top" Width="120"/>
                 <TextBox x:Name="txtTotalFee" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="125,168,0,0" TextWrapping="Wrap" Text="{Binding Path=Passenger.TotalBaggageFee, Mode=OneWay, StringFormat=C}" VerticalAlignment="Top" Width="120"/>
                 <Button x:Name="btnPrintLabel" Content="Label drucken" HorizontalAlignment="Left" Margin="271,137,0,0" VerticalAlignment="Top" Width="143" Click="OnClickButtonPrintLabel"  Height="53" Background="#FF62FB69" FontSize="14"/>
 

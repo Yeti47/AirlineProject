@@ -25,15 +25,19 @@ namespace Airline.CheckIn {
         /// <summary>
         /// Hilfsklasse zum Speichern der Gepäckgebühr-Informationen aus der Datenbank.
         /// </summary>
-        private class BaggageFeeInfo{
+        private class BaggageFeeInfo {
 
             public decimal WeightLimit { get; set; }
             public decimal FeePerExtraKilogram { get; set; }
+
         }
 
         #region Constants
 
         private const string ERROR_FEE_INFO = "Leider ist beim Einholen der Gepäckgebühr-Informationen ein Fehler aufgetreten. Es werden stattdessen Standard-Werte verwendet.";
+
+        private const decimal MIN_RANDOM_WEIGHT = 3m;
+        private const decimal MAX_RANDOM_WEIGHT = 38m;
 
         #endregion
 
@@ -42,6 +46,8 @@ namespace Airline.CheckIn {
         private ObjectRelationalMapper<BaggageFeeInfo> _baggageFeeMapper;
 
         private BaggageFeeInfo _baggageFeeInfo = new BaggageFeeInfo { WeightLimit = 30m, FeePerExtraKilogram = 3m };
+
+        private Random _random = new Random();
 
         #endregion
 
@@ -62,6 +68,8 @@ namespace Airline.CheckIn {
             InitializeComponent();
 
             PreviewBaggage = new Baggage();
+
+            PreviewBaggage.PropertyChanged += (sender, e) => btnOkay.IsEnabled = HasValidInput;
 
             if (baggage != null) {
 
@@ -92,7 +100,7 @@ namespace Airline.CheckIn {
 
             _baggageFeeMapper.SourceTable = baggageFeeTable;
 
-            btnOkay.IsEnabled = HasValidInput;
+            //btnOkay.IsEnabled = HasValidInput;
 
         }
 
@@ -126,17 +134,6 @@ namespace Airline.CheckIn {
 
         }
 
-        private void OnTextWeightKeyDown(object sender, KeyEventArgs e) {
-
-            if(txtWeight.IsFocused) {
-
-                if (e.Key == Key.Return || e.Key == Key.Enter || e.Key == Key.Tab)
-                    txtFee.Focus();
-
-            }
-
-        }
-
         private void OnClickButtonOkay(object sender, RoutedEventArgs e) {
 
             if(!HasValidInput) {
@@ -164,11 +161,15 @@ namespace Airline.CheckIn {
 
         }
 
-        private void OnTextWeightChanged(object sender, TextChangedEventArgs e) {
+        private void OnClickButtonWeigh(object sender, RoutedEventArgs e) {
 
-            btnOkay.IsEnabled = HasValidInput;
+            if (PreviewBaggage == null || _random == null)
+                return;
+
+            PreviewBaggage.Weight = (decimal)_random.NextDouble() * (MAX_RANDOM_WEIGHT - MIN_RANDOM_WEIGHT) + MIN_RANDOM_WEIGHT;
 
         }
+
 
         #endregion
 

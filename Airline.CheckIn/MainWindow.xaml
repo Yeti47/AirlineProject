@@ -10,7 +10,7 @@
         >
     <Grid>
         <Label Content="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="30" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FF00FFE8" Foreground="#FF385D58" FontWeight="Bold" FontSize="16"/>
-        <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="24" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="28" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
 
         <Button x:Name="btnCheckIn" Content="Check-In" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" DockPanel.Dock="Top" Click="OnClickButtonCheckIn" Background="#FFC4E2E4" FontSize="16" Margin="0,80,0,0"/>
         <Button x:Name="btnPil" Content="Passenger Information List erstellen" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" DockPanel.Dock="Top" Click="OnClickButtonPil"  Background="#FFC4E2E4" FontSize="16" Margin="0,115,0,0"/>

@@ -7,23 +7,22 @@
         mc:Ignorable="d"
         xml:lang="de-DE"
         Title="Gepäck hinzufügen" Height="301" Width="364"
-        Loaded="OnWindowLoaded"
-         KeyDown="OnTextWeightKeyDown">
+        Loaded="OnWindowLoaded">
     <Grid>
-        <TextBlock x:Name="txtblHint" HorizontalAlignment="Left" Margin="9,84,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" FontStyle="Italic" Foreground="#FFD80000" Width="337"><Run Text="Hinweis: "/><Run Text="Fehler bei der Verbindung zum Messgerät."/><LineBreak/><Run Text="Bitte Gewicht manu"/><Run Text="e"/><Run Text="ll eingeben."/></TextBlock>
-        <Label x:Name="lblWeight" Content="Gewicht (kg):" HorizontalAlignment="Left" Margin="9,127,0,0" VerticalAlignment="Top" Width="94"/>
-        <TextBox x:Name="txtWeight" HorizontalAlignment="Left" Height="23" Margin="127,131,0,0" TextWrapping="Wrap" Text="{Binding Path=Weight, UpdateSourceTrigger=LostFocus, StringFormat='F2'}" VerticalAlignment="Top" Width="120" TextChanged="OnTextWeightChanged"/>
-        <Label x:Name="lblFee" Content="Gebühr (EUR):" HorizontalAlignment="Left" Margin="9,180,0,0" VerticalAlignment="Top" Width="94"/>
-        <TextBox x:Name="txtFee" HorizontalAlignment="Left" Height="23" Margin="127,184,0,0" TextWrapping="Wrap" Text="{Binding Path=Fee, Mode=OneWay, StringFormat=C}" VerticalAlignment="Top" Width="120" IsReadOnly="True"/>
+        <TextBlock x:Name="txtblHint" HorizontalAlignment="Left" Margin="9,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontStyle="Italic" Foreground="Blue"  Width="337" Height="44">Bitte Gepäck auf die Waage legen und anschließend auf "Wiegen" klicken.</TextBlock>
+        <Label x:Name="lblWeight" Content="Gewicht:" HorizontalAlignment="Left" Margin="10,171,0,0" VerticalAlignment="Top" Width="94"/>
+        <TextBox x:Name="txtWeight" HorizontalAlignment="Left" Height="23" Margin="128,175,0,0" TextWrapping="Wrap" Text="{Binding Path=Weight, UpdateSourceTrigger=LostFocus, StringFormat='{}{0:F2} kg'}" VerticalAlignment="Top" Width="120" IsReadOnly="True"/>
+        <Label x:Name="lblFee" Content="Gebühr:" HorizontalAlignment="Left" Margin="10,199,0,0" VerticalAlignment="Top" Width="94"/>
+        <TextBox x:Name="txtFee" HorizontalAlignment="Left" Height="23" Margin="128,203,0,0" TextWrapping="Wrap" Text="{Binding Path=Fee, Mode=OneWay, StringFormat=C}" VerticalAlignment="Top" Width="120" IsReadOnly="True"/>
 
         <Label x:Name="lblWeightLimit" Content="Zulässiges Maximalgewicht:" HorizontalAlignment="Left" Margin="9,10,0,0" VerticalAlignment="Top" Width="187"/>
-        <TextBox x:Name="txtWeightLimit" HorizontalAlignment="Left" Height="23" Margin="226,10,0,0" TextWrapping="Wrap" Text="{Binding Path=WeightLimit, StringFormat=F2}" Width="120" IsReadOnly="True" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtWeightLimit" HorizontalAlignment="Left" Height="23" Margin="226,10,0,0" TextWrapping="Wrap" Text="{Binding Path=WeightLimit, StringFormat='{}{0:F2} kg'}" Width="120" IsReadOnly="True" VerticalAlignment="Top"/>
         <Label x:Name="lblFeePerExtraKilo" Content="Gebühr pro angefangenes kg:" HorizontalAlignment="Left" Margin="9,41,0,0" VerticalAlignment="Top" Width="187"/>
         <TextBox x:Name="txtFeePerExtraKilo" HorizontalAlignment="Left" Height="23" Margin="226,45,0,0" TextWrapping="Wrap" Text="{Binding Path=FeePerExtraKilogram, StringFormat='C', UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" IsReadOnly="True"/>
 
-        <Button x:Name="btnOkay" Content="OK" HorizontalAlignment="Left" Margin="10,229,0,0" VerticalAlignment="Top" Width="75" Click="OnClickButtonOkay"/>
-        <Button x:Name="btnCancel" Content="Abbrechen" HorizontalAlignment="Left" Margin="92,229,0,0" VerticalAlignment="Top" Width="75" Click="OnClickButtonCancel"/>
-        <TextBlock x:Name="txtblHintWeight" HorizontalAlignment="Left" Margin="10,154,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" FontStyle="Italic" Foreground="#555555" Width="337">Wert wird bei Fokusverlust oder mit Enter übernommen.</TextBlock>
+        <Button x:Name="btnOkay" Content="OK" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="75" Click="OnClickButtonOkay"/>
+        <Button x:Name="btnCancel" Content="Abbrechen" HorizontalAlignment="Left" Margin="92,240,0,0" VerticalAlignment="Top" Width="75" Click="OnClickButtonCancel"/>
+        <Button x:Name="btnWeigh" Content="Wiegen" Background="#FF76E8E8" HorizontalAlignment="Left" Margin="9,121,0,0" VerticalAlignment="Top" Width="157" Height="45" FontSize="14" Click="OnClickButtonWeigh"/>
 
     </Grid>
 </Window>

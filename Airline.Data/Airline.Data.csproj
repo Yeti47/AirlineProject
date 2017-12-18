@@ -58,6 +58,7 @@
     <Compile Include="Airport.cs" />
     <Compile Include="Booking.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="DatabaseAccessor.cs" />
     <Compile Include="Databases\airline_dbDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

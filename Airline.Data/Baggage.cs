@@ -10,7 +10,6 @@ namespace Airline.Data {
 
     public class Baggage : INotifyPropertyChanged {
 
-
         #region Fields
 
         private decimal _weight;

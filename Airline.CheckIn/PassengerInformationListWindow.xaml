@@ -5,6 +5,60 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Airline.CheckIn"
         mc:Ignorable="d"
-        Title="PIL erzeugen" Height="456" Width="1090.5">
-    <Grid/>
+        xmlns:AirlineData="clr-namespace:Airline.Data;assembly=Airline.Data"
+        Title="PIL erzeugen" Height="768" Width="1024"
+        Loaded="OnWindowLoaded"
+        >
+    <Grid>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="30" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FF00FFE8" Foreground="#FF385D58" FontWeight="Bold" FontSize="16"/>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="28" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
+
+        <GroupBox x:Name="grpFlights" Header="Flug auswählen" HorizontalAlignment="Stretch" MaxHeight="278" Margin="10,63,22,0" VerticalAlignment="Top" Height="248">
+            <Grid>
+                <ListView x:Name="lvwFlights" HorizontalAlignment="Stretch" Margin="10,10,10,28" >
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn x:Name="fl_id" Header="ID" Width="55" DisplayMemberBinding="{Binding Id}"/>
+                            <GridViewColumn x:Name="fl_departureAirport" Header="Start-Flughafen" Width="120" DisplayMemberBinding="{Binding DepartureAirport}"/>
+                            <GridViewColumn x:Name="fl_destinationAirport" Header="Ziel-Flughafen" Width="120" DisplayMemberBinding="{Binding DestinationAirport}"/>
+                            <GridViewColumn x:Name="fl_departureTime" Header="Abflug-Zeit" Width="120" DisplayMemberBinding="{Binding TimeOfDeparture, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="fl_arrivalTime" Header="Ankunfts-Zeit" Width="120" DisplayMemberBinding="{Binding TimeOfArrival, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="fl_flightType" Header="Art" Width="80" DisplayMemberBinding="{Binding FlightTypeText}"/>
+                            <GridViewColumn x:Name="fl_totalNumberSeats" Header="Plätze gesamt" Width="80" DisplayMemberBinding="{Binding TotalNumberSeats}"/>
+                            <GridViewColumn x:Name="fl_numberFreeSeats" Header="davon frei" Width="80" DisplayMemberBinding="{Binding AvailableSeatCount, Mode=OneWay}"/>
+
+                        </GridView>
+                    </ListView.View>
+
+                </ListView>
+                <Button x:Name="btnFetchFlights" Content="Aktualisieren"  VerticalAlignment="Top" Width="127" HorizontalAlignment="Left" Margin="10,203,0,0" Click="OnClickButtonFetchAllFlights"/>
+
+            </Grid>
+        </GroupBox>
+
+        <Button x:Name="btnGeneratePil" Content="PIL generieren" HorizontalAlignment="Left" Margin="10,326,0,0" Width="200" VerticalAlignment="Top" Height="52" Background="#FF2FE4E4" Click="OnClickButtonGeneratePil" FontSize="22"/>
+        <Button x:Name="btnPrintPil" Content="PIL drucken" HorizontalAlignment="Left" Margin="215,326,0,0" Width="200" VerticalAlignment="Top" Height="52" Background="#FFF1DF25" Click="OnClickButtonPrintPil"  FontSize="22"/>
+
+
+        <GroupBox x:Name="grpPil" Header="Passenger Information List" Height="328" VerticalAlignment="Top" Margin="0,399,0,0">
+            <Grid>
+                <ListView x:Name="lvwBoardingCards" HorizontalAlignment="stretch" VerticalAlignment="Stretch" Margin="10,10,10,10">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn x:Name="id" Header="ID" Width="50" DisplayMemberBinding="{Binding Path=Id}"/>
+                            <GridViewColumn x:Name="passenger" Header="Passagier" Width="150" DisplayMemberBinding="{Binding Path=Passenger}"/>
+                            <GridViewColumn x:Name="flightId" Header="Flugnr." Width="70" DisplayMemberBinding="{Binding Path=Flight.Id}"/>
+                            <GridViewColumn x:Name="departureAirport" Header="Von" Width="150" DisplayMemberBinding="{Binding Path=Flight.DepartureAirport}"/>
+                            <GridViewColumn x:Name="destinationAirport" Header="Nach" Width="150" DisplayMemberBinding="{Binding Path=Flight.DestinationAirport}"/>
+                            <GridViewColumn x:Name="departureTime" Header="Abflug-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfDeparture, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="arrivalTime" Header="Ankunfts-Zeit" Width="125" DisplayMemberBinding="{Binding Path=Flight.TimeOfArrival, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="seatNumber" Header="Sitz" Width="110" DisplayMemberBinding="{Binding Path=SeatNumber}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+            </Grid>
+        </GroupBox>
+
+    </Grid>
 </Window>

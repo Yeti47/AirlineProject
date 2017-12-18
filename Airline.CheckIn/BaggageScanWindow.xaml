@@ -8,22 +8,42 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         xml:lang="de-DE"
-        Title="Gepäck scannen" Height="480" Width="640">
+        Title="Gepäck scannen" Height="480" Width="640"
+        Loaded="OnWindowLoaded">
     <Grid>
         <Label Content="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="30" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FF00FFE8" Foreground="#FF385D58" FontWeight="Bold" FontSize="16"/>
-        <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="24" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
+        <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="28" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
 
-        <TextBox IsReadOnly="true" HorizontalAlignment="Left" Height="54" Margin="19,61,0,0" Foreground="Red" TextWrapping="Wrap" Text="Hinweis:&#xD;&#xA;Verbindung zum Scanner konnte nicht aufgebaut werden. &#xD;&#xA;Bitte Daten manuell erfassen." VerticalAlignment="Top" Width="407"/>
-        <Label x:Name="lblBaggageId" Content="Gepäckstück-ID:" HorizontalAlignment="Left" Margin="19,122,0,0" VerticalAlignment="Top" Width="107"/>
-        <TextBox x:Name="txtBaggageId" HorizontalAlignment="Left" Height="23" Margin="131,125,0,0" TextWrapping="Wrap" Text="{Binding BaggageId}" VerticalAlignment="Top" Width="120"/>
-        <Label x:Name="lblFlightId" Content="Flugnr.:" HorizontalAlignment="Left" Margin="19,153,0,0" VerticalAlignment="Top" Width="107"/>
-        <TextBox x:Name="txtFlightId" HorizontalAlignment="Left" Height="23" Margin="131,156,0,0" TextWrapping="Wrap" Text="{Binding FlightId}" VerticalAlignment="Top" Width="120"/>
-        <Button x:Name="btnScan" Content="Scannen" HorizontalAlignment="Left" Margin="291,125,0,0" VerticalAlignment="Top" Width="135" Height="54" Background="#FF30FFEC" FontSize="18" Click="OnClickButtonScan" RenderTransformOrigin="0.485,0.8"/>
+        <TextBlock Foreground="Red" HorizontalAlignment="Left" Margin="19,63,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="90" Width="198"><Run Text="Hinweis:"/><LineBreak/><Run/>Verbindung zum Scanner konnte nicht aufgebaut werden. Bitte Daten manuell erfassen.</TextBlock>
 
+        <Label x:Name="lblBaggageId" Content="Gepäckstück-ID:" HorizontalAlignment="Left" Margin="19,158,0,0" VerticalAlignment="Top" Width="107"/>
+        <TextBox x:Name="txtBaggageId" HorizontalAlignment="Left" Height="23" Margin="131,158,0,0" TextWrapping="Wrap" Text="{Binding BaggageId}" VerticalAlignment="Top" Width="86" RenderTransformOrigin="0.475,1.87"/>
 
-        <GroupBox x:Name="grpBookings" Header="Gepäck" Height="245" VerticalAlignment="Top" Margin="0,194,0,0">
+        <GroupBox x:Name="grpFlights" Header="Flug auswählen" HorizontalAlignment="Stretch" MaxHeight="278" Margin="231,62,10,0" VerticalAlignment="Top" Height="194">
             <Grid>
-                <ListView x:Name="lvwBaggage" HorizontalAlignment="stretch" Height="184" VerticalAlignment="Top" Margin="10,10,10,0">
+                <ListView x:Name="lvwFlights" HorizontalAlignment="Stretch" Margin="10,10,10,28" >
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn x:Name="fl_id" Header="ID" Width="55" DisplayMemberBinding="{Binding Id}"/>
+                            <GridViewColumn x:Name="fl_departureAirport" Header="Start-Flughafen" Width="120" DisplayMemberBinding="{Binding DepartureAirport}"/>
+                            <GridViewColumn x:Name="fl_destinationAirport" Header="Ziel-Flughafen" Width="120" DisplayMemberBinding="{Binding DestinationAirport}"/>
+                            <GridViewColumn x:Name="fl_departureTime" Header="Abflug-Zeit" Width="120" DisplayMemberBinding="{Binding TimeOfDeparture, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="fl_arrivalTime" Header="Ankunfts-Zeit" Width="120" DisplayMemberBinding="{Binding TimeOfArrival, StringFormat='dd.MM.yyyy - HH:mm'}"/>
+                            <GridViewColumn x:Name="fl_flightType" Header="Art" Width="80" DisplayMemberBinding="{Binding FlightTypeText}"/>
+                        </GridView>
+                    </ListView.View>
+
+                </ListView>
+                <Button x:Name="btnFetchFlights" Content="Aktualisieren"  VerticalAlignment="Top" Width="127" HorizontalAlignment="Left" Margin="10,149,0,0" Click="OnClickButtonRefreshFlights"/>
+
+            </Grid>
+        </GroupBox>
+        <Button x:Name="btnScan" Content="Scannen" HorizontalAlignment="Left" Margin="19,207,0,0" VerticalAlignment="Top" Width="198" Height="36" Background="#FF30FFEC" FontSize="18" Click="OnClickButtonScan" RenderTransformOrigin="0.485,0.8"/>
+
+
+        <GroupBox x:Name="grpBookings" Header="Gepäck" Height="196" VerticalAlignment="Top" Margin="0,253,0,0">
+            <Grid>
+                <ListView x:Name="lvwBaggage" HorizontalAlignment="stretch" Height="128" VerticalAlignment="Top" Margin="10,10,10,0">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn x:Name="id" Header="ID" Width="50" DisplayMemberBinding="{Binding Path=Id}"/>
@@ -34,10 +54,10 @@
                     </ListView.View>
                 </ListView>
 
-                <Button x:Name="btnFetchAll" Content="Alle Gepäckstücke anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAll"  Margin="10,199,0,0" Width="178"/>
-                <Button x:Name="btnReset" Content="Zurücksetzen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonReset"  Margin="193,199,0,0" Width="119"/>
+                <Button x:Name="btnFetchAll" Content="Alle Gepäckstücke anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAll"  Margin="10,143,0,0" Width="178"/>
+                <Button x:Name="btnReset" Content="Zurücksetzen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonReset"  Margin="193,143,0,0" Width="119"/>
 
             </Grid>
         </GroupBox>
-     </Grid>
+    </Grid>
 </Window>
