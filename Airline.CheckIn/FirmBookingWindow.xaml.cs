@@ -29,6 +29,8 @@ namespace Airline.CheckIn {
         private const string ERROR_BAGGAGE_REMOVAL = "Aufgrund eines unbekannten Fehlers, konnte das Gepäckstück nicht entfernt werden.";
         private const string ERROR_NO_PRINTER = "Es konnte keine Verbindung zum Druck-Server aufgebaut werden. Tja, schade! Dann benutzen Sie doch einfach Stift und Papier!";
 
+        private const int PASSPORT_ID_MIN_LENGTH = 6;
+
         #endregion
 
         #region Fields
@@ -65,7 +67,7 @@ namespace Airline.CheckIn {
                     && !string.IsNullOrWhiteSpace(txtFirstName.Text)
                     && !string.IsNullOrWhiteSpace(txtLastName.Text)
                     && (SelectedFlight != null)
-                    && (!SelectedFlight.IsInternational || !string.IsNullOrWhiteSpace(txtPassportId.Text))
+                    && (!SelectedFlight.IsInternational || (!string.IsNullOrWhiteSpace(txtPassportId.Text) && txtPassportId.Text.Trim().Length >= PASSPORT_ID_MIN_LENGTH))
                     && (Booking.IsWaiting || (cmbSeat.SelectedItem as SeatNumber?) != null);
 
             }
@@ -167,8 +169,16 @@ namespace Airline.CheckIn {
             txtPassportId.Text = txtPassportId.Text?.Trim();
 
             if (!HasValidInput) {
+
+                if(SelectedFlight != null && SelectedFlight.IsInternational && txtPassportId.Text.Length < PASSPORT_ID_MIN_LENGTH) {
+                    MessageBox.Show("Die Reisepassnummer muss bei Auslandsreisen mindestens " + PASSPORT_ID_MIN_LENGTH + " Zeichen lang sein.", "Ungültige Reisepassnummer", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return false;
+                }
+
                 MessageBox.Show("Bitte zunächst alle erforderlichen Daten eingeben.", "Fehlende Eingaben", MessageBoxButton.OK, MessageBoxImage.Warning);
+
                 return false;
+
             }
 
             if (!Booking.IsWaiting && Booking.Passenger.Baggage.Count() < 1) {

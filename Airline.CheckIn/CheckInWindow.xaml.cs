@@ -100,6 +100,7 @@ namespace Airline.CheckIn
             if (dialogResult.Value) {
 
                 _bookings.Add(bookingWindow.Booking);
+                lvwBookings.SelectedItem = bookingWindow.Booking;
 
             }
 
