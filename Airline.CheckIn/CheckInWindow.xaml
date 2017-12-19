@@ -57,8 +57,8 @@
                     </ListView.View>
                 </ListView>
 
-                <Button x:Name="btnFetchAllBookings" Content="Alle Buchungen anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAllBookings"  Margin="10,303,0,0" Width="178"/>
-                <Button x:Name="btnWaitingList" Content="Nur Warteliste anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonShowWaitingList"  Margin="193,303,0,0" Width="178"/>
+                <Button x:Name="btnFetchAllBookings" Content="Alle Buchungen anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAllBookings"  Margin="10,303,0,0" Width="178" Height="30"/>
+                <Button x:Name="btnWaitingList" Content="Nur Warteliste anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonShowWaitingList"  Margin="193,303,0,0" Width="178" Height="30"/>
 
             </Grid>
         </GroupBox>
