@@ -107,12 +107,14 @@ namespace Airline.CheckIn
 
         private void OnClickButtonFetchAllBookings(object sender, RoutedEventArgs e) {
 
+            ResetSearchFilters();
             PopulateBookingListView();
 
         }
 
         private void OnClickButtonShowWaitingList(object sender, RoutedEventArgs e) {
 
+            ResetSearchFilters();
             PopulateBookingListView("bookings.IsWaiting<>0");
 
         }
@@ -152,6 +154,16 @@ namespace Airline.CheckIn
                 PopulateBookingListView(where, sqlParams.ToArray());
             else
                 PopulateBookingListView();
+
+        }
+
+        private void ResetSearchFilters() {
+
+            txtBookingId.Text = string.Empty;
+            txtFlightId.Text = string.Empty;
+            txtFirstName.Text = string.Empty;
+            txtLastName.Text = string.Empty;
+            chkStandBy.IsChecked = false;
 
         }
 

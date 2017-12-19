@@ -91,6 +91,9 @@ namespace Airline.CheckIn
                 MessageBox.Show("Fehler beim Einholen der Buchungen. \r\n\r\nDetails:\r\n" + fetchResult.ErrorDetails, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             else {
 
+                if (fetchResult.NumberAffectedRows < 1)
+                    MessageBox.Show("Für den ausgewählten Flug liegen keine Festbuchungen vor.");
+
                 _bookings.Clear();
 
                 foreach (Booking booking in fetchResult.RetrievedItems)
