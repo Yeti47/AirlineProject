@@ -58,9 +58,9 @@ namespace Airline.CheckIn
 
         }
 
-        private void PopulateBookingListView() {
+        private void PopulateBookingListView(string whereClause = null, SqlParameter[] sqlParams = null) {
 
-            FetchResult<Booking> fetchResult = dbAccess.FetchBookings();
+            FetchResult<Booking> fetchResult = dbAccess.FetchBookings(whereClause, sqlParams);
 
             if (fetchResult.HasError)
                 MessageBox.Show("Fehler beim Einholen der Buchungen. \r\n\r\nDetails:\r\n" + fetchResult.ErrorDetails, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -111,6 +111,52 @@ namespace Airline.CheckIn
 
         }
 
+        private void OnClickButtonShowWaitingList(object sender, RoutedEventArgs e) {
+
+            PopulateBookingListView("bookings.IsWaiting<>0");
+
+        }
+
+        private void OnClickButtonSearch(object sender, RoutedEventArgs e) {
+
+            List<string> whereClauses = new List<string>();
+            List<SqlParameter> sqlParams = new List<SqlParameter>();
+
+            if (!string.IsNullOrWhiteSpace(txtBookingId.Text)) {
+                whereClauses.Add("bookings.Id=@SearchId");
+                sqlParams.Add(new SqlParameter("@SearchId", txtBookingId.Text));
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtFlightId.Text)) {
+                whereClauses.Add("bookings.FlightId=@SearchFlightId");
+                sqlParams.Add(new SqlParameter("@SearchFlightId", txtFlightId.Text));
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtFirstName.Text)) {
+                whereClauses.Add("passengers.FirstName LIKE @SearchFirstName");
+                sqlParams.Add(new SqlParameter("@SearchFirstName", "%" + txtFirstName.Text + "%"));
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtLastName.Text)) {
+                whereClauses.Add("passengers.LastName LIKE @SearchLastName");
+                sqlParams.Add(new SqlParameter("@SearchLastName", "%" + txtLastName.Text + "%"));
+            }
+
+            if(chkStandBy.IsChecked.HasValue && chkStandBy.IsChecked.Value) {
+                whereClauses.Add("bookings.IsWaiting<>0");
+            }
+
+            string where = string.Join(" AND ", whereClauses);
+
+            if (!string.IsNullOrWhiteSpace(where))
+                PopulateBookingListView(where, sqlParams.ToArray());
+            else
+                PopulateBookingListView();
+
+        }
+
         #endregion
+
+
     }
 }

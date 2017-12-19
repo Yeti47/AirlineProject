@@ -12,10 +12,34 @@
         <Label Content="{x:Static AirlineData:Config.AIRLINE_NAME}" Height="30" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FF00FFE8" Foreground="#FF385D58" FontWeight="Bold" FontSize="16"/>
         <Label Content="{x:Static AirlineData:Config.AIRLINE_SLOGAN}" Height="28" VerticalAlignment="Top"  HorizontalAlignment="Stretch" Background="#FFB4FFF8" Foreground="#FF2E5F59" FontWeight="Bold" FontSize="12" Margin="0,30,0,0"/>
 
-        <Button x:Name="btnCreateBooking" Content="Festbuchung erstellen" HorizontalContentAlignment="Center"  HorizontalAlignment="Right" VerticalAlignment="Top" Click="OnClickButtonCreateBooking" Margin="0,223,26,0" Width="214" Height="52" FontSize="16" Background="#FF00AEFF"/>
-        <Button x:Name="btnCreateStandby" Content="Stand-by-Buchung erstellen" HorizontalAlignment="Right" VerticalAlignment="Top" Click="OnClickButtonCreateStandbyBooking" Margin="0,280,26,0" Width="214" Height="52" FontSize="16" Background="#FFFFE800"/>
+        <Button x:Name="btnCreateBooking" Content="Festbuchung erstellen" HorizontalContentAlignment="Center"  HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateBooking" Margin="10,114,0,0" Width="214" Height="52" FontSize="16" Background="#FF00AEFF"/>
+        <Button x:Name="btnCreateStandby" Content="Stand-by-Buchung erstellen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonCreateStandbyBooking" Margin="10,171,0,0" Width="214" Height="52" FontSize="16" Background="#FFFFE800"/>
 
-        <GroupBox x:Name="grpBookings" Header="Buchungen" Height="400" VerticalAlignment="Top" Margin="0,337,0,0">
+
+        <GroupBox x:Name="grpFilters" Header="Buchungen Suchen" HorizontalAlignment="Stretch" Height="182" Margin="244,63,10,0" VerticalAlignment="Top" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="lblBookingId" Content="Buchungs-ID:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="91"/>
+                <TextBox x:Name="txtBookingId" HorizontalAlignment="Left" Height="23" Margin="106,13,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+                <Label x:Name="lblFlightId" Content="Flugnummer:" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="91"/>
+                <TextBox x:Name="txtFlightId" HorizontalAlignment="Left" Height="23" Margin="106,41,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+
+
+                <Label x:Name="lblFirstName" Content="Vorname:" HorizontalAlignment="Left" Margin="247,13,0,0" VerticalAlignment="Top" Width="91"/>
+                <TextBox x:Name="txtFirstName" HorizontalAlignment="Left" Height="23" Margin="338,13,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+                <Label x:Name="lvlLastName" Content="Nachname:" HorizontalAlignment="Left" Margin="247,39,0,0" VerticalAlignment="Top" Width="91"/>
+                <TextBox x:Name="txtLastName" HorizontalAlignment="Left" Height="23" Margin="338,42,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+                <Button x:Name="btnSearch" Content="Suchen" HorizontalAlignment="Left" Margin="10,124,0,0" VerticalAlignment="Top" Width="227" Height="28" Click="OnClickButtonSearch"/>
+                <CheckBox x:Name="chkStandBy" Content="Nur Stand-By" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top"/>
+
+            </Grid>
+
+        </GroupBox>
+
+
+        <GroupBox x:Name="grpBookings" Header="Buchungen" Height="400" VerticalAlignment="Top" Margin="10,250,10,0">
             <Grid>
                 <ListView x:Name="lvwBookings" HorizontalAlignment="stretch" Height="288" VerticalAlignment="Top" Margin="10,10,10,0">
                     <ListView.View>
@@ -34,6 +58,7 @@
                 </ListView>
 
                 <Button x:Name="btnFetchAllBookings" Content="Alle Buchungen anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonFetchAllBookings"  Margin="10,303,0,0" Width="178"/>
+                <Button x:Name="btnWaitingList" Content="Nur Warteliste anzeigen" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OnClickButtonShowWaitingList"  Margin="193,303,0,0" Width="178"/>
 
             </Grid>
         </GroupBox>
