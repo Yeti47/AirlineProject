@@ -253,6 +253,21 @@ namespace Airline.Data {
 
         }
 
+        public FetchResult<Baggage> FetchBaggage(string whereClause = null, SqlParameter[] sqlParams = null) {
+
+            DatabaseTable baggageTargetTable = new DatabaseTable("baggage");
+            baggageTargetTable.AddAttribute("Id");
+            baggageTargetTable.AddAttribute("FlightId");
+            baggageTargetTable.AddAttribute("PassengerId");
+            baggageTargetTable.AddAttribute("Weight");
+            baggageTargetTable.AddAttribute("Fee");
+
+            ObjectRelationalMapper<Baggage> baggageMapper = new ObjectRelationalMapper<Baggage>(Config.DB_CONNECTION_STRING, baggageTargetTable);
+
+            return baggageMapper.Fetch(attr => new Baggage((int)attr["Id"], (int)attr["FlightId"], (decimal)attr["Weight"], (decimal)attr["Fee"]), whereClause, sqlParams);
+
+        }
+
         #endregion
 
     }

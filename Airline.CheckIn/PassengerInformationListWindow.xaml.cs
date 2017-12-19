@@ -28,10 +28,7 @@ namespace Airline.CheckIn
         private ObservableCollection<Flight> _flights = new ObservableCollection<Flight>();
         private ObservableCollection<Booking> _bookings = new ObservableCollection<Booking>();
 
-        private ObjectRelationalMapper<Flight> _flightsMapper = new ObjectRelationalMapper<Flight>(Config.DB_CONNECTION_STRING, Config.FlightSourceTable);
-
-        private ObjectRelationalMapper<Booking> _bookingMapper = new ObjectRelationalMapper<Booking>(Config.DB_CONNECTION_STRING, Config.BookingSourceTable);
-
+        private DatabaseAccessor dbAccess = new DatabaseAccessor();
 
         #endregion
 
@@ -58,20 +55,7 @@ namespace Airline.CheckIn
 
         private void PopulateFlightList() {
 
-            FetchResult<Flight> flightsFetched = _flightsMapper.Fetch(attr => {
-
-                Airport departureAp = new Airport(attr["depAirport.Country"].ToString(), attr["depAirport.City"].ToString());
-                Airport destinationAp = new Airport(attr["destAirport.Country"].ToString(), attr["destAirport.City"].ToString());
-
-                return
-                    new Flight((int)attr["flights.Id"],
-                    (DateTime)attr["TimeOfDeparture"],
-                    (DateTime)attr["TimeOfArrival"],
-                    departureAp, destinationAp,
-                    (int)attr["SeatRows"],
-                    (int)attr["SeatsPerRow"]);
-
-            });
+            FetchResult<Flight> flightsFetched = dbAccess.FetchFlights();
 
             if (flightsFetched.HasError) {
 
@@ -101,7 +85,7 @@ namespace Airline.CheckIn
 
             }
 
-            FetchResult<Booking> fetchResult = _bookingMapper.Fetch(Booking.CreateFromDataRecord, "bookings.FlightId=@FlightId AND bookings.IsWaiting=0", new SqlParameter[] { new SqlParameter("@FlightId", SelectedFlight.Id) });
+            FetchResult<Booking> fetchResult = dbAccess.FetchBookings("bookings.FlightId=@FlightId AND bookings.IsWaiting=0", new SqlParameter[] { new SqlParameter("@FlightId", SelectedFlight.Id) });
 
             if (fetchResult.HasError)
                 MessageBox.Show("Fehler beim Einholen der Buchungen. \r\n\r\nDetails:\r\n" + fetchResult.ErrorDetails, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);

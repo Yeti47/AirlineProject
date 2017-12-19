@@ -28,7 +28,7 @@ namespace Airline.CheckIn
 
         private ObservableCollection<Booking> _bookings = new ObservableCollection<Booking>();
 
-        private ObjectRelationalMapper<Booking> _bookingMapper = new ObjectRelationalMapper<Booking>(Config.DB_CONNECTION_STRING, Config.BookingSourceTable);
+        private DatabaseAccessor dbAccess = new DatabaseAccessor();
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace Airline.CheckIn
 
         private void PopulateBookingListView() {
 
-            FetchResult<Booking> fetchResult = _bookingMapper.Fetch(Booking.CreateFromDataRecord);
+            FetchResult<Booking> fetchResult = dbAccess.FetchBookings();
 
             if (fetchResult.HasError)
                 MessageBox.Show("Fehler beim Einholen der Buchungen. \r\n\r\nDetails:\r\n" + fetchResult.ErrorDetails, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);

@@ -46,8 +46,7 @@ namespace Airline.CheckIn
         private ObservableCollection<Baggage> _baggage = new ObservableCollection<Baggage>();
         private ObservableCollection<Flight> _flights = new ObservableCollection<Flight>();
 
-        private ObjectRelationalMapper<Baggage> _baggageMapper;
-        private ObjectRelationalMapper<Flight> _flightsMapper;
+        private DatabaseAccessor dbAccess = new DatabaseAccessor();
 
         #endregion
 
@@ -79,9 +78,6 @@ namespace Airline.CheckIn
 
             InitializeComponent();
 
-            _baggageMapper = new ObjectRelationalMapper<Baggage>(Config.DB_CONNECTION_STRING, Config.BaggageTargetTable);
-            _flightsMapper = new ObjectRelationalMapper<Flight>(Config.DB_CONNECTION_STRING, Config.FlightSourceTable);
-
             lvwBaggage.Items.Clear();
             lvwBaggage.ItemsSource = _baggage;
 
@@ -102,16 +98,14 @@ namespace Airline.CheckIn
 
         }
 
-        private void PopulateBaggageList(string whereClause = null) {
+        private void PopulateBaggageList() {
 
-            if (_baggageMapper == null)
-                return;
 
-            FetchResult<Baggage> baggageFetchResult = _baggageMapper.Fetch(attr => new Baggage((int)attr["Id"], (int)attr["FlightId"], (decimal)attr["Weight"], (decimal)attr["Fee"]), whereClause);
+            FetchResult<Baggage> baggageFetchResult = dbAccess.FetchBaggage();
 
             if(baggageFetchResult.HasError) {
 
-                MessageBox.Show(ERROR_FETCH_BAGGAGE + "\r\n\r\nDetails:\r\n" + baggageFetchResult.ErrorDetails, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ERROR_FETCH_BAGGAGE + "\r\n\r\nDetails:\r\n" + baggageFetchResult, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -132,9 +126,6 @@ namespace Airline.CheckIn
 
         private void OnClickButtonScan(object sender, RoutedEventArgs e) {
 
-            if (_baggageMapper == null)
-                return;
-
             if(SelectedFlight == null) {
 
                 MessageBox.Show(ERROR_NO_FLIGHT_SELECTED, "Kein Flug gewählt");
@@ -149,8 +140,7 @@ namespace Airline.CheckIn
 
             }
 
-            FetchResult<Baggage> baggageFetchResult = _baggageMapper.Fetch(attr => new Baggage((int)attr["Id"], (int)attr["FlightId"], (decimal)attr["Weight"], (decimal)attr["Fee"]), 
-                "Id=@Id AND FlightId=@FlightID", 
+            FetchResult<Baggage> baggageFetchResult = dbAccess.FetchBaggage( "Id=@Id AND FlightId=@FlightID", 
                 new SqlParameter[] { new SqlParameter("@Id", BaggageId), new SqlParameter("@FlightId", SelectedFlight.Id) }
             );
 
@@ -173,20 +163,7 @@ namespace Airline.CheckIn
 
         private void PopulateFlightList() {
 
-            FetchResult<Flight> flightsFetched = _flightsMapper.Fetch(attr => {
-
-                Airport departureAp = new Airport(attr["depAirport.Country"].ToString(), attr["depAirport.City"].ToString());
-                Airport destinationAp = new Airport(attr["destAirport.Country"].ToString(), attr["destAirport.City"].ToString());
-
-                return
-                    new Flight((int)attr["flights.Id"],
-                    (DateTime)attr["TimeOfDeparture"],
-                    (DateTime)attr["TimeOfArrival"],
-                    departureAp, destinationAp,
-                    (int)attr["SeatRows"],
-                    (int)attr["SeatsPerRow"]);
-
-            });
+            FetchResult<Flight> flightsFetched = dbAccess.FetchFlights();
 
             if (flightsFetched.HasError) {
 
